@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <title>照片焦段统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f7f9fc;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 720px;
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 2rem;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 1rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        input[type="file"] {
+            padding: 0.5rem 1rem;
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            background: #eaf4fd;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #2980b9;
+            width: 100%;
+            max-width: 360px;
+            margin-top: 1rem;
+        }
+        #progressContainer {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        #chartContainer {
+            width: 100%;
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: #fafafa;
+            border-radius: 14px;
+        }
+        #focalChart {
+            width: 100% !important;
+            min-height: 400px !important;
+        }
+        #granularityControl {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        #granularityValue {
+            font-weight: bold;
+            margin-left: 0.5rem;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📷 照片焦段统计</h1>
+    <input type="file" id="photoInput" multiple accept="image/jpeg" />
+
+    <div id="granularityControl">
+        <label for="granularity">分组粒度 (mm)：</label>
+        <input type="range" id="granularity" min="1" max="50" value="1" />
+        <span id="granularityValue">1</span> mm
+    </div>
+
+    <div id="progressContainer">
+        <div id="progressText">等待上传照片...</div>
+        <div id="progressBarBackground" style="background:#ddd; border-radius:8px; height:14px; overflow:hidden;">
+            <div id="progressBarFill" style="height:100%; width:0%; background:#3498db;"></div>
+        </div>
+    </div>
+
+    <div id="chartContainer">
+        <canvas id="focalChart"></canvas>
+    </div>
+</div>
+
+<script>
+    const input = document.getElementById('photoInput');
+    const progressText = document.getElementById('progressText');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const chartCtx = document.getElementById('focalChart').getContext('2d');
+    const granularityInput = document.getElementById('granularity');
+    const granularityValue = document.getElementById('granularityValue');
+    let chart;
+    let focalLengths = [];
+
+    function updateGranularityLabel() {
+        granularityValue.textContent = granularityInput.value;
+    }
+
+    granularityInput.addEventListener('input', () => {
+        updateGranularityLabel();
+        if (focalLengths.length > 0) {
+            drawChart(focalLengths);
+        }
+    });
+
+    input.addEventListener('change', async (event) => {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        focalLengths = [];
+        const maxConcurrency = 6;
+        let completed = 0;
+        const queue = files.slice();
+
+        progressText.textContent = `开始处理 ${files.length} 张照片...`;
+        progressBarFill.style.width = '0%';
+
+        const runWorker = async () => {
+            while (queue.length > 0) {
+                const file = queue.shift();
+                await processFile(file, focalLengths);
+                completed++;
+                const percent = Math.round((completed / files.length) * 100);
+                progressText.textContent = `处理进度：${completed} / ${files.length} 张 (${percent}%)`;
+                progressBarFill.style.width = `${percent}%`;
+                await new Promise(r => setTimeout(r, 0));
+            }
+        };
+
+        await Promise.all(Array.from({ length: maxConcurrency }, runWorker));
+        progressText.textContent = `✅ 完成！共处理 ${completed} 张照片`;
+
+        drawChart(focalLengths);
+    });
+
+    function processFile(file, focalList) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    EXIF.getData(img, function () {
+                        let focal = EXIF.getTag(this, "FocalLength");
+                        if (focal) {
+                            let val = typeof focal === 'object' && focal.numerator
+                                ? focal.numerator / focal.denominator
+                                : parseFloat(focal);
+                            focalList.push(val);
+                        }
+                        resolve();
+                    });
+                };
+                img.onerror = () => resolve();
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function drawChart(focals) {
+        const step = parseInt(granularityInput.value);
+        const grouped = {};
+        for (const f of focals) {
+            const bucket = Math.floor(f / step) * step;
+            const label = `${bucket}-${bucket + step - 1}mm`;
+            grouped[label] = (grouped[label] || 0) + 1;
+        }
+
+        const sortedKeys = Object.keys(grouped).sort((a, b) => {
+            const numA = parseInt(a);
+            const numB = parseInt(b);
+            return numA - numB;
+        });
+
+        const labels = sortedKeys;
+        const data = sortedKeys.map(k => grouped[k]);
+
+        if (chart) chart.destroy();
+        chart = new Chart(chartCtx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: '使用次数',
+                    data,
+                    backgroundColor: 'rgba(52, 152, 219, 0.8)',
+                    borderRadius: 6,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            autoSkip: true,
+                            maxRotation: 45,
+                            minRotation: 30
+                        },
+                        title: {
+                            display: true,
+                            text: '焦段分组'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '出现次数'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#2980b9'
+                    }
+                }
+            }
+        });
+    }
+
+    updateGranularityLabel();
+</script>
+</body>
+</html>
