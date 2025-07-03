@@ -18,30 +18,73 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 720px;
+            max-width: 960px;
             width: 100%;
             background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            padding: 2rem;
-            text-align: center;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 2rem 2.5rem;
         }
         h1 {
-            margin-bottom: 1rem;
+            margin-bottom: 2rem;
             font-weight: 700;
             color: #2c3e50;
+            text-align: center;
         }
         input[type="file"] {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.2rem;
             border: 2px dashed #3498db;
-            border-radius: 10px;
-            background: #eaf4fd;
+            border-radius: 12px;
+            background: #ecf6ff;
             cursor: pointer;
             font-size: 1rem;
             color: #2980b9;
+            display: block;
+            margin: 0 auto 1.5rem;
             width: 100%;
-            max-width: 360px;
+            max-width: 400px;
+        }
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin: 1.5rem 0;
+        }
+        .card {
+            background: #f1f3f7;
+            padding: 1rem 1.2rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+        }
+        .card small {
+            margin-top: 0.3rem;
+            color: #777;
+        }
+        #granularityValue {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        #deviceCheckboxContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
             margin-top: 1rem;
+        }
+        #deviceCheckboxContainer label {
+            background: #ecf0f1;
+            border-radius: 8px;
+            padding: 0.4rem 0.8rem;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.95rem;
         }
         #progressContainer {
             margin-top: 2rem;
@@ -58,15 +101,6 @@
             width: 100% !important;
             min-height: 400px !important;
         }
-        #granularityControl {
-            margin-top: 2rem;
-            text-align: center;
-        }
-        #granularityValue {
-            font-weight: bold;
-            margin-left: 0.5rem;
-            color: #2c3e50;
-        }
     </style>
 </head>
 <body>
@@ -74,10 +108,23 @@
     <h1>📷 照片焦段统计</h1>
     <input type="file" id="photoInput" multiple accept="image/jpeg" />
 
-    <div id="granularityControl">
-        <label for="granularity">分组粒度 (mm)：</label>
-        <input type="range" id="granularity" min="1" max="50" value="1" />
-        <span id="granularityValue">1</span> mm
+    <div class="control-section">
+        <div class="card">
+            <label for="granularity">分组粒度 (mm)</label>
+            <input type="range" id="granularity" min="1" max="50" value="1" />
+            <span><span id="granularityValue">1</span> mm</span>
+        </div>
+
+        <div class="card">
+            <label for="cropEstimate">裁切修正</label>
+            <input type="checkbox" id="cropEstimate" />
+            <small>使用裁切后等效焦段</small>
+        </div>
+
+        <div class="card">
+            <label>选择设备</label>
+            <div id="deviceCheckboxContainer"></div>
+        </div>
     </div>
 
     <div id="progressContainer">
@@ -99,24 +146,25 @@
     const chartCtx = document.getElementById('focalChart').getContext('2d');
     const granularityInput = document.getElementById('granularity');
     const granularityValue = document.getElementById('granularityValue');
+    const cropEstimate = document.getElementById('cropEstimate');
+    const deviceContainer = document.getElementById('deviceCheckboxContainer');
     let chart;
     let focalLengths = [];
-
-    function updateGranularityLabel() {
-        granularityValue.textContent = granularityInput.value;
-    }
+    let maxWidths = {};
+    let selectedDevices = new Set();
 
     granularityInput.addEventListener('input', () => {
-        updateGranularityLabel();
-        if (focalLengths.length > 0) {
-            drawChart(focalLengths);
-        }
+        granularityValue.textContent = granularityInput.value;
+        drawChart();
     });
+
+    cropEstimate.addEventListener('change', drawChart);
 
     input.addEventListener('change', async (event) => {
         const files = Array.from(event.target.files);
         if (files.length === 0) return;
         focalLengths = [];
+        maxWidths = {};
         const maxConcurrency = 6;
         let completed = 0;
         const queue = files.slice();
@@ -127,7 +175,7 @@
         const runWorker = async () => {
             while (queue.length > 0) {
                 const file = queue.shift();
-                await processFile(file, focalLengths);
+                await processFile(file);
                 completed++;
                 const percent = Math.round((completed / files.length) * 100);
                 progressText.textContent = `处理进度：${completed} / ${files.length} 张 (${percent}%)`;
@@ -137,12 +185,12 @@
         };
 
         await Promise.all(Array.from({ length: maxConcurrency }, runWorker));
+        updateDeviceCheckboxes();
         progressText.textContent = `✅ 完成！共处理 ${completed} 张照片`;
-
-        drawChart(focalLengths);
+        drawChart();
     });
 
-    function processFile(file, focalList) {
+    function processFile(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
             reader.onload = function (e) {
@@ -150,11 +198,18 @@
                 img.onload = function () {
                     EXIF.getData(img, function () {
                         let focal = EXIF.getTag(this, "FocalLength");
+                        let make = EXIF.getTag(this, "Make") || "";
+                        let model = EXIF.getTag(this, "Model") || "Unknown";
+                        let device = `${make.trim()} ${model.trim()}`.trim();
                         if (focal) {
                             let val = typeof focal === 'object' && focal.numerator
                                 ? focal.numerator / focal.denominator
                                 : parseFloat(focal);
-                            focalList.push(val);
+                            const imgWidth = img.naturalWidth || img.width;
+                            if (!maxWidths[device] || imgWidth > maxWidths[device]) {
+                                maxWidths[device] = imgWidth;
+                            }
+                            focalLengths.push({ focal: val, width: imgWidth, device });
                         }
                         resolve();
                     });
@@ -166,45 +221,72 @@
         });
     }
 
-    function drawChart(focals) {
+    function updateDeviceCheckboxes() {
+        const devices = [...new Set(focalLengths.map(item => item.device))];
+        deviceContainer.innerHTML = '';
+        selectedDevices = new Set(devices);
+        devices.forEach(device => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.value = device;
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) selectedDevices.add(device);
+                else selectedDevices.delete(device);
+                drawChart();
+            });
+            label.appendChild(checkbox);
+            label.append(` ${device}`);
+            deviceContainer.appendChild(label);
+        });
+    }
+
+    function drawChart() {
         const step = parseInt(granularityInput.value);
-        const grouped = {};
-        for (const f of focals) {
+        const useCrop = cropEstimate.checked;
+        const buckets = new Set();
+        const dataMap = {};
+
+        for (const item of focalLengths) {
+            if (!selectedDevices.has(item.device)) continue;
+            let f = item.focal;
+            const maxWidth = maxWidths[item.device] || item.width;
+            if (useCrop && item.width && maxWidth && item.width < maxWidth) {
+                f = f * (maxWidth / item.width);
+            }
             const bucket = Math.floor(f / step) * step;
-            const label = `${bucket}-${bucket + step - 1}mm`;
-            grouped[label] = (grouped[label] || 0) + 1;
+            buckets.add(bucket);
+            dataMap[item.device] = dataMap[item.device] || {};
+            dataMap[item.device][bucket] = (dataMap[item.device][bucket] || 0) + 1;
         }
 
-        const sortedKeys = Object.keys(grouped).sort((a, b) => {
-            const numA = parseInt(a);
-            const numB = parseInt(b);
-            return numA - numB;
+        const sortedBuckets = [...buckets].sort((a, b) => a - b);
+        const labels = sortedBuckets.map(b => `${b}-${b + step - 1}mm`);
+        const datasets = [...selectedDevices].map(device => {
+            return {
+                label: device,
+                data: sortedBuckets.map(b => dataMap[device]?.[b] || 0),
+                backgroundColor: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),
+                borderRadius: 6
+            };
         });
-
-        const labels = sortedKeys;
-        const data = sortedKeys.map(k => grouped[k]);
 
         if (chart) chart.destroy();
         chart = new Chart(chartCtx, {
             type: 'bar',
             data: {
                 labels,
-                datasets: [{
-                    label: '使用次数',
-                    data,
-                    backgroundColor: 'rgba(52, 152, 219, 0.8)',
-                    borderRadius: 6,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.7
-                }]
+                datasets
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
                     x: {
+                        stacked: true,
                         ticks: {
-                            autoSkip: true,
+                            autoSkip: false,
                             maxRotation: 45,
                             minRotation: 30
                         },
@@ -222,7 +304,9 @@
                     }
                 },
                 plugins: {
-                    legend: { display: false },
+                    legend: {
+                        position: 'bottom'
+                    },
                     tooltip: {
                         enabled: true,
                         backgroundColor: '#2980b9'
@@ -231,8 +315,6 @@
             }
         });
     }
-
-    updateGranularityLabel();
 </script>
 </body>
 </html>
