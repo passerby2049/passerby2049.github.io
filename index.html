@@ -201,6 +201,23 @@
             margin-bottom: 1rem;
             border: 1px solid rgba(102, 126, 234, 0.2);
         }
+        
+        .section {
+            margin-bottom: 4rem;
+        }
+        
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #e8f4fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
     </style>
 </head>
 <body>
@@ -210,43 +227,72 @@
             <p>精选工具，让生活更便捷</p>
         </div>
         
-        <div class="tools-grid">
-            <div class="tool-card">
-                <div class="tag">理财规划</div>
-                <div class="tool-icon">💰</div>
-                <h2 class="tool-title">退休计算器</h2>
-                <p class="tool-description">
-                    智能退休理财计算器，帮您规划未来的财务自由之路。支持多种计算模式，精准预测退休资金需求。
-                </p>
-                <ul class="tool-features">
-                    <li>三种计算模式：余额验证、存款计算、支出计算</li>
-                    <li>考虑通胀率和投资收益率</li>
-                    <li>支出衰减模型，更贴近现实</li>
-                    <li>直观的图表展示年度资产变化</li>
-                    <li>精确到千元的计算精度</li>
-                </ul>
-                <a href="retirement-calculator.html" class="tool-button">
-                    开始计算 →
-                </a>
+        <!-- 实用工具区域 -->
+        <div class="section">
+            <h2 class="section-title">🔧 实用工具</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tag">理财规划</div>
+                    <div class="tool-icon">💰</div>
+                    <h3 class="tool-title">退休计算器</h3>
+                    <p class="tool-description">
+                        智能退休理财计算器，帮您规划未来的财务自由之路。支持多种计算模式，精准预测退休资金需求。
+                    </p>
+                    <ul class="tool-features">
+                        <li>三种计算模式：余额验证、存款计算、支出计算</li>
+                        <li>考虑通胀率和投资收益率</li>
+                        <li>支出衰减模型，更贴近现实</li>
+                        <li>直观的图表展示年度资产变化</li>
+                        <li>精确到千元的计算精度</li>
+                    </ul>
+                    <a href="retirement-calculator.html" class="tool-button">
+                        开始计算 →
+                    </a>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tag">摄影分析</div>
+                    <div class="tool-icon">📷</div>
+                    <h3 class="tool-title">照片焦段统计</h3>
+                    <p class="tool-description">
+                        专业的摄影数据分析工具，通过EXIF信息统计您的拍摄习惯，帮助优化器材配置。
+                    </p>
+                    <ul class="tool-features">
+                        <li>批量处理照片EXIF数据</li>
+                        <li>多设备焦段使用统计</li>
+                        <li>裁切修正功能</li>
+                        <li>可调节分组粒度</li>
+                        <li>直观的柱状图展示</li>
+                    </ul>
+                    <a href="photo-focal-analyzer.html" class="tool-button">
+                        分析照片 →
+                    </a>
+                </div>
             </div>
-            
-            <div class="tool-card">
-                <div class="tag">摄影分析</div>
-                <div class="tool-icon">📷</div>
-                <h2 class="tool-title">照片焦段统计</h2>
-                <p class="tool-description">
-                    专业的摄影数据分析工具，通过EXIF信息统计您的拍摄习惯，帮助优化器材配置。
-                </p>
-                <ul class="tool-features">
-                    <li>批量处理照片EXIF数据</li>
-                    <li>多设备焦段使用统计</li>
-                    <li>裁切修正功能</li>
-                    <li>可调节分组粒度</li>
-                    <li>直观的柱状图展示</li>
-                </ul>
-                <a href="photo-focal-analyzer.html" class="tool-button">
-                    分析照片 →
-                </a>
+        </div>
+        
+        <!-- 读书笔记区域 -->
+        <div class="section">
+            <h2 class="section-title">📚 读书笔记</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tag">投资学习</div>
+                    <div class="tool-icon">📊</div>
+                    <h3 class="tool-title">《聪明的投资者》读书笔记</h3>
+                    <p class="tool-description">
+                        本杰明·格雷厄姆经典投资理论的可视化呈现，帮助理解价值投资的核心原则。
+                    </p>
+                    <ul class="tool-features">
+                        <li>投资vs投机的本质区别</li>
+                        <li>安全边际原理详解</li>
+                        <li>防御型投资者策略指南</li>
+                        <li>积极型投资者工具箱</li>
+                        <li>互动图表展示投资数据</li>
+                    </ul>
+                    <a href="the-intelligent-investor.html" class="tool-button">
+                        查看笔记 →
+                    </a>
+                </div>
             </div>
         </div>
         
