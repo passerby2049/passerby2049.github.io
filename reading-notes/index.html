@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>读书笔记 - 个人学习空间</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body {
+            font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #475569;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            background: linear-gradient(45deg, #475569, #64748b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #475569;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .note-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .note-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #64748b, #94a3b8);
+        }
+        
+        .note-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            background: rgba(255, 255, 255, 1);
+        }
+        
+        .note-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+        }
+        
+        .note-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+        
+        .note-description {
+            color: #64748b;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .note-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .note-features li {
+            color: #475569;
+            margin-bottom: 0.6rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .note-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .note-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(100, 116, 139, 0.3);
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .note-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
+            background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+        }
+        
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            color: #475569;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(71, 85, 105, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(71, 85, 105, 0.8);
+            font-size: 0.95rem;
+            margin-top: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .notes-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .note-card {
+                padding: 1.5rem;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 读书笔记</h1>
+            <a href="../" class="nav-link">
+                ← 返回首页
+            </a>
+        </div>
+        
+        <div class="notes-grid">
+            <div class="note-card">
+                <div class="tag">投资学习</div>
+                <div class="note-icon">📊</div>
+                <h3 class="note-title">《聪明的投资者》读书笔记</h3>
+                <p class="note-description">
+                    本杰明·格雷厄姆经典投资理论的可视化呈现，帮助理解价值投资的核心原则和实践方法。
+                </p>
+                <ul class="note-features">
+                    <li>投资vs投机的本质区别分析</li>
+                    <li>安全边际原理的深度解析</li>
+                    <li>防御型投资者的完整策略指南</li>
+                    <li>积极型投资者的专业工具箱</li>
+                    <li>交互式图表展示历史投资数据</li>
+                </ul>
+                <a href="the-intelligent-investor.html" class="note-button">
+                    查看笔记 →
+                </a>
+            </div>
+            
+            <div class="note-card">
+                <div class="tag">投资策略</div>
+                <div class="note-icon">⚖️</div>
+                <h3 class="note-title">《杠杆轮动策略》读书笔记</h3>
+                <p class="note-description">
+                    深度解析杠杆轮动策略的原理与风险，通过数据可视化揭示高收益策略背后的真相。
+                </p>
+                <ul class="note-features">
+                    <li>杠杆投资的核心机制深度分析</li>
+                    <li>200日均线策略的详细解读</li>
+                    <li>历史回测数据的可视化展示</li>
+                    <li>全面的风险警示与实操指南</li>
+                    <li>理性客观的投资策略思考</li>
+                </ul>
+                <a href="lrs.html" class="note-button">
+                    查看笔记 →
+                </a>
+            </div>
+            
+            <div class="note-card">
+                <div class="tag">价值投资</div>
+                <div class="note-icon">💎</div>
+                <h3 class="note-title">《巴菲特致股东的信》读书笔记</h3>
+                <p class="note-description">
+                    深度解析巴菲特致股东信中的投资智慧，将其转化为可执行的投资框架和实践指南。
+                </p>
+                <ul class="note-features">
+                    <li>四大基础心态：能力圈与安全边际</li>
+                    <li>经济护城河的识别与深度评估</li>
+                    <li>股东盈余等核心估值工具详解</li>
+                    <li>集中投资vs多元化策略对比</li>
+                    <li>完整的可执行投资检查清单</li>
+                </ul>
+                <a href="berkshirehathaway-letters.html" class="note-button">
+                    查看笔记 →
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>持续更新中，更多投资经典著作解析敬请期待...</p>
+        </div>
+    </div>
+</body>
+</html>

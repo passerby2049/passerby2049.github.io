@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>退休计算器</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 2.5rem;
+        }
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #64748b, #94a3b8);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .back-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
+        }
+        h1 {
+            margin-bottom: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .form-group:hover {
+            border-color: #64748b;
+            transform: translateY(-2px);
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #495057;
+            font-size: 1.1rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #64748b;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-group .unit {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.3rem;
+        }
+        .calculate-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        .results {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border-left: 5px solid #64748b;
+        }
+        .results h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .result-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        .result-value {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        .chart-container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+        .chart-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        #balanceChart {
+            max-height: 400px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        .mode-selector {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .mode-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 1rem;
+        }
+        .mode-tab {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #64748b;
+            background: white;
+            color: #64748b;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-radius: 0;
+            font-size: 0.9rem;
+        }
+        .mode-tab:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+        .mode-tab:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+        .mode-tab:not(:first-child) {
+            border-left: 1px solid #64748b;
+        }
+        .mode-tab.active {
+            background: #64748b;
+            color: white;
+        }
+        .mode-tab:hover:not(.active) {
+            background: #f8f9fa;
+        }
+        .mode-description {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .decline-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f1f8ff;
+            border-radius: 15px;
+            border: 1px solid #e1ecf7;
+        }
+        .decline-section h3 {
+            margin: 0 0 1.5rem 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+        .decline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+<a href="tools.html" class="back-home">← 返回工具</a>
+<div class="container">
+    <h1>💰 退休计算器</h1>
+    
+    <div class="mode-selector">
+        <div class="mode-tabs">
+            <button id="balanceCheckBtn" class="mode-tab active" onclick="switchMode('balance-check')">余额验证</button>
+            <button id="savingsCalcBtn" class="mode-tab" onclick="switchMode('savings-calc')">存款计算</button>
+            <button id="expenseCalcBtn" class="mode-tab" onclick="switchMode('expense-calc')">支出计算</button>
+        </div>
+        <div class="mode-description">
+            <span id="modeDescription">给定初始存款和年支出，计算是否能维持到预期寿命</span>
+        </div>
+    </div>
+    
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="initialSavings">初始存款金额</label>
+            <input type="number" id="initialSavings" value="1000000" min="0" step="1000">
+            <div class="unit">元</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="currentAge">当前年龄</label>
+            <input type="number" id="currentAge" value="35" min="18" max="100">
+            <div class="unit">岁</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="lifeExpectancy">预期寿命</label>
+            <input type="number" id="lifeExpectancy" value="85" min="50" max="120">
+            <div class="unit">岁</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="annualExpenses">年生活费用</label>
+            <input type="number" id="annualExpenses" value="100000" min="0" step="1000">
+            <div class="unit">元</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="investmentReturn">年投资收益率</label>
+            <input type="number" id="investmentReturn" value="7" min="0" max="20" step="0.1">
+            <div class="unit">%</div>
+        </div>
+        
+        <div class="form-group">
+            <label for="inflationRate">年通胀率</label>
+            <input type="number" id="inflationRate" value="3" min="0" max="10" step="0.1">
+            <div class="unit">%</div>
+        </div>
+    </div>
+    
+    <div class="decline-section">
+        <h3>支出衰减设置</h3>
+        <div class="decline-grid">
+            <div class="form-group">
+                <label for="declineStartAge">衰减开始年龄</label>
+                <input type="number" id="declineStartAge" value="60" min="50" max="90">
+                <div class="unit">岁</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="declineRate">十年衰减率</label>
+                <input type="number" id="declineRate" value="10" min="0" max="50" step="1">
+                <div class="unit">%</div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="calculate-btn" onclick="calculate()">
+        <span id="calculateBtnText">计算退休资金</span>
+    </button>
+    
+    <div id="results" class="results" style="display: none;">
+        <h3>计算结果</h3>
+        <div id="resultContent"></div>
+    </div>
+    
+    <div class="chart-container">
+        <div class="chart-title">年度资产余额变化</div>
+        <canvas id="balanceChart"></canvas>
+    </div>
+</div>
+
+<script>
+let chart;
+let currentMode = 'balance-check';
+
+function switchMode(mode) {
+    currentMode = mode;
+    const balanceCheckBtn = document.getElementById('balanceCheckBtn');
+    const savingsCalcBtn = document.getElementById('savingsCalcBtn');
+    const expenseCalcBtn = document.getElementById('expenseCalcBtn');
+    const modeDescription = document.getElementById('modeDescription');
+    const calculateBtnText = document.getElementById('calculateBtnText');
+    const initialSavingsGroup = document.getElementById('initialSavings').closest('.form-group');
+    const annualExpensesGroup = document.getElementById('annualExpenses').closest('.form-group');
+    
+    // 重置所有按钮状态
+    [balanceCheckBtn, savingsCalcBtn, expenseCalcBtn].forEach(btn => btn.classList.remove('active'));
+    
+    if (mode === 'balance-check') {
+        balanceCheckBtn.classList.add('active');
+        modeDescription.textContent = '给定初始存款和年支出，计算是否能维持到预期寿命';
+        calculateBtnText.textContent = '验证资金余额';
+        initialSavingsGroup.classList.remove('hidden');
+        annualExpensesGroup.classList.remove('hidden');
+    } else if (mode === 'savings-calc') {
+        savingsCalcBtn.classList.add('active');
+        modeDescription.textContent = '给定年支出目标，反算需要多少初始存款';
+        calculateBtnText.textContent = '计算所需存款';
+        initialSavingsGroup.classList.add('hidden');
+        annualExpensesGroup.classList.remove('hidden');
+    } else if (mode === 'expense-calc') {
+        expenseCalcBtn.classList.add('active');
+        modeDescription.textContent = '给定初始存款，计算每年最大能支出多少';
+        calculateBtnText.textContent = '计算最大支出';
+        initialSavingsGroup.classList.remove('hidden');
+        annualExpensesGroup.classList.add('hidden');
+    }
+}
+
+function calculate() {
+    if (currentMode === 'balance-check') {
+        calculateRetirement();
+    } else if (currentMode === 'savings-calc') {
+        calculateRequiredSavings();
+    } else if (currentMode === 'expense-calc') {
+        calculateMaxExpenses();
+    }
+}
+
+function calculateMaxExpenses() {
+    const initialSavings = parseFloat(document.getElementById('initialSavings').value);
+    const currentAge = parseInt(document.getElementById('currentAge').value);
+    const lifeExpectancy = parseInt(document.getElementById('lifeExpectancy').value);
+    const investmentReturn = parseFloat(document.getElementById('investmentReturn').value) / 100;
+    const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
+    const declineStartAge = parseInt(document.getElementById('declineStartAge').value);
+    const declineRate = parseFloat(document.getElementById('declineRate').value) / 100;
+    
+    if (currentAge >= lifeExpectancy) {
+        alert('预期寿命必须大于当前年龄');
+        return;
+    }
+    
+    // 二分查找最大年支出
+    let low = 0;
+    let high = initialSavings * 0.5; // 初始上界估算（初始资产的50%）
+    let result = 0;
+    const tolerance = 1000; // 精度：1000元
+    
+    while (high - low > tolerance) {
+        const mid = (low + high) / 2;
+        const simulation = simulateRetirement(initialSavings, currentAge, lifeExpectancy, mid, 
+                                            investmentReturn, inflationRate, declineStartAge, declineRate);
+        
+        if (simulation.finalBalance >= 0 && !simulation.balanceDepletedYear) {
+            result = mid;
+            low = mid;
+        } else {
+            high = mid;
+        }
+    }
+    
+    // 显示结果
+    displayExpenseResults(result);
+    
+    // 用找到的最大年支出运行完整模拟来生成图表
+    const simulation = simulateRetirement(initialSavings, currentAge, lifeExpectancy, result, 
+                                        investmentReturn, inflationRate, declineStartAge, declineRate);
+    drawChart(simulation.labels, simulation.yearlyData);
+}
+
+function displayExpenseResults(maxExpenses) {
+    const resultsDiv = document.getElementById('results');
+    const resultContent = document.getElementById('resultContent');
+    
+    let resultHTML = `
+        <div class="success">
+            <strong>✅ 计算完成</strong><br>
+            在给定的初始存款下，您每年最大能支出：<strong>${formatMoney(maxExpenses)}</strong>
+        </div>
+        <div class="result-item">
+            <span class="result-label">最大年支出：</span>
+            <span class="result-value">${formatMoney(maxExpenses)}</span>
+        </div>
+    `;
+    
+    resultContent.innerHTML = resultHTML;
+    resultsDiv.style.display = 'block';
+}
+
+function calculateRequiredSavings() {
+    const currentAge = parseInt(document.getElementById('currentAge').value);
+    const lifeExpectancy = parseInt(document.getElementById('lifeExpectancy').value);
+    const annualExpenses = parseFloat(document.getElementById('annualExpenses').value);
+    const investmentReturn = parseFloat(document.getElementById('investmentReturn').value) / 100;
+    const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
+    const declineStartAge = parseInt(document.getElementById('declineStartAge').value);
+    const declineRate = parseFloat(document.getElementById('declineRate').value) / 100;
+    
+    if (currentAge >= lifeExpectancy) {
+        alert('预期寿命必须大于当前年龄');
+        return;
+    }
+    
+    // 二分查找所需的初始存款
+    let low = 0;
+    let high = annualExpenses * (lifeExpectancy - currentAge) * 2; // 初始上界估算
+    let result = 0;
+    const tolerance = 1000; // 精度：1000元
+    
+    while (high - low > tolerance) {
+        const mid = (low + high) / 2;
+        const simulation = simulateRetirement(mid, currentAge, lifeExpectancy, annualExpenses, 
+                                            investmentReturn, inflationRate, declineStartAge, declineRate);
+        
+        if (simulation.finalBalance >= 0 && !simulation.balanceDepletedYear) {
+            result = mid;
+            high = mid;
+        } else {
+            low = mid;
+        }
+    }
+    
+    // 显示结果
+    displayReverseResults(result);
+    
+    // 用找到的初始存款运行完整模拟来生成图表
+    const simulation = simulateRetirement(result, currentAge, lifeExpectancy, annualExpenses, 
+                                        investmentReturn, inflationRate, declineStartAge, declineRate);
+    drawChart(simulation.labels, simulation.yearlyData);
+}
+
+function simulateRetirement(initialSavings, currentAge, lifeExpectancy, annualExpenses, 
+                          investmentReturn, inflationRate, declineStartAge, declineRate) {
+    const years = lifeExpectancy - currentAge;
+    const yearlyData = [];
+    const labels = [];
+    
+    let currentBalance = initialSavings;
+    let currentAnnualExpenses = annualExpenses;
+    let balanceDepletedYear = null;
+    
+    for (let year = 0; year <= years; year++) {
+        const age = currentAge + year;
+        
+        if (year > 0) {
+            // 计算投资收益
+            currentBalance = currentBalance * (1 + investmentReturn);
+            
+            // 计算当年支出（先通胀，再按十年衰减）
+            let yearlyExpense = currentAnnualExpenses;
+            if (age >= declineStartAge) {
+                const decadesSinceStart = Math.floor((age - declineStartAge) / 10);
+                const totalDeclineRate = 1 - Math.pow(1 - declineRate, decadesSinceStart + 1);
+                yearlyExpense *= (1 - totalDeclineRate);
+            }
+            
+            // 扣除年度开销
+            currentBalance -= yearlyExpense;
+            
+            // 更新下一年的基础开销（通胀调整）
+            currentAnnualExpenses *= (1 + inflationRate);
+        }
+        
+        // 如果余额为负，设为0并记录耗尽年份
+        if (currentBalance < 0) {
+            currentBalance = 0;
+            if (balanceDepletedYear === null) {
+                balanceDepletedYear = age;
+            }
+        }
+        
+        yearlyData.push(currentBalance);
+        labels.push(age);
+        
+        // 如果余额已经耗尽，后续年份都是0
+        if (currentBalance === 0) {
+            for (let remainingYear = year + 1; remainingYear <= years; remainingYear++) {
+                yearlyData.push(0);
+                labels.push(currentAge + remainingYear);
+            }
+            break;
+        }
+    }
+    
+    return {
+        finalBalance: currentBalance,
+        balanceDepletedYear,
+        yearlyData,
+        labels
+    };
+}
+
+function calculateRetirement() {
+    const initialSavings = parseFloat(document.getElementById('initialSavings').value);
+    const currentAge = parseInt(document.getElementById('currentAge').value);
+    const lifeExpectancy = parseInt(document.getElementById('lifeExpectancy').value);
+    const annualExpenses = parseFloat(document.getElementById('annualExpenses').value);
+    const investmentReturn = parseFloat(document.getElementById('investmentReturn').value) / 100;
+    const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
+    const declineStartAge = parseInt(document.getElementById('declineStartAge').value);
+    const declineRate = parseFloat(document.getElementById('declineRate').value) / 100;
+    
+    if (currentAge >= lifeExpectancy) {
+        alert('预期寿命必须大于当前年龄');
+        return;
+    }
+    
+    const simulation = simulateRetirement(initialSavings, currentAge, lifeExpectancy, annualExpenses, 
+                                        investmentReturn, inflationRate, declineStartAge, declineRate);
+    
+    // 显示结果
+    displayResults(simulation.finalBalance, simulation.balanceDepletedYear, lifeExpectancy, 
+                  lifeExpectancy - currentAge);
+    
+    // 绘制图表
+    drawChart(simulation.labels, simulation.yearlyData);
+}
+
+function displayReverseResults(requiredSavings) {
+    const resultsDiv = document.getElementById('results');
+    const resultContent = document.getElementById('resultContent');
+    
+    let resultHTML = `
+        <div class="success">
+            <strong>✅ 计算完成</strong><br>
+            为了维持到预期寿命，您需要的初始存款为：<strong>${formatMoney(requiredSavings)}</strong>
+        </div>
+        <div class="result-item">
+            <span class="result-label">所需初始存款：</span>
+            <span class="result-value">${formatMoney(requiredSavings)}</span>
+        </div>
+    `;
+    
+    resultContent.innerHTML = resultHTML;
+    resultsDiv.style.display = 'block';
+}
+
+function displayResults(finalBalance, balanceDepletedYear, lifeExpectancy, totalYears) {
+    const resultsDiv = document.getElementById('results');
+    const resultContent = document.getElementById('resultContent');
+    
+    let resultHTML = '';
+    
+    if (balanceDepletedYear) {
+        resultHTML += `
+            <div class="warning">
+                <strong>⚠️ 资金不足警告</strong><br>
+                资金将在 ${balanceDepletedYear} 岁时耗尽，距离预期寿命还有 ${lifeExpectancy - balanceDepletedYear} 年。
+            </div>
+        `;
+    } else {
+        resultHTML += `
+            <div class="success">
+                <strong>✅ 资金充足</strong><br>
+                按照当前计划，您的资金可以维持到预期寿命。
+            </div>
+        `;
+    }
+    
+    resultHTML += `
+        <div class="result-item">
+            <span class="result-label">最终余额：</span>
+            <span class="result-value">${formatMoney(finalBalance)}</span>
+        </div>
+        <div class="result-item">
+            <span class="result-label">计算年数：</span>
+            <span class="result-value">${totalYears} 年</span>
+        </div>
+    `;
+    
+    if (balanceDepletedYear) {
+        resultHTML += `
+            <div class="result-item">
+                <span class="result-label">资金耗尽年龄：</span>
+                <span class="result-value">${balanceDepletedYear} 岁</span>
+            </div>
+        `;
+    }
+    
+    resultContent.innerHTML = resultHTML;
+    resultsDiv.style.display = 'block';
+}
+
+function drawChart(labels, data) {
+    const ctx = document.getElementById('balanceChart').getContext('2d');
+    
+    if (chart) {
+        chart.destroy();
+    }
+    
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '资产余额',
+                data: data,
+                borderColor: '#64748b',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: '年龄'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: '资产余额 (元)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return formatMoney(value);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return '资产余额: ' + formatMoney(context.parsed.y);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function formatMoney(amount) {
+    if (amount >= 10000) {
+        return (amount / 10000).toFixed(1) + '万元';
+    }
+    return amount.toLocaleString('zh-CN') + '元';
+}
+
+// 初始化计算
+if (currentMode === 'balance-check') {
+    calculateRetirement();
+}
+</script>
+</body>
+</html>
