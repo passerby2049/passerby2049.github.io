@@ -21,10 +21,12 @@
         }
         
         body {
-            font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .container {
@@ -40,13 +42,13 @@
         
         .header h1 {
             font-size: 3.5rem;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 1rem;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            background: linear-gradient(45deg, #475569, #64748b);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.025em;
         }
         
         .header p {
@@ -61,21 +63,25 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.9);
-            color: #475569;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #667eea;
             text-decoration: none;
             padding: 0.8rem 1.5rem;
-            border-radius: 10px;
-            font-weight: 600;
+            border-radius: 12px;
+            font-weight: 500;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.5);
         }
         
         .nav-link:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
         }
         
         .reports-grid {
@@ -86,13 +92,14 @@
         }
         
         .report-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
             padding: 2rem;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
             overflow: hidden;
         }
@@ -104,13 +111,14 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #64748b, #94a3b8);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px 24px 0 0;
         }
         
         .report-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            background: rgba(255, 255, 255, 1);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.95);
         }
         
         .report-icon {
@@ -118,14 +126,19 @@
             margin-bottom: 1.5rem;
             display: block;
             filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+            text-align: center;
+            line-height: 1;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+            font-variant-emoji: emoji;
         }
         
         .report-title {
             font-size: 1.6rem;
-            font-weight: 700;
-            color: #2c3e50;
+            font-weight: 600;
+            color: #1a202c;
             margin-bottom: 1rem;
             line-height: 1.2;
+            letter-spacing: -0.025em;
         }
         
         .report-description {
@@ -161,35 +174,38 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: linear-gradient(135deg, #64748b 0%, #94a3b8 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-decoration: none;
             padding: 1rem 2rem;
-            border-radius: 12px;
-            font-weight: 600;
+            border-radius: 16px;
+            font-weight: 500;
             font-size: 1rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(100, 116, 139, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
             width: 100%;
             justify-content: center;
+            border: none;
         }
         
         .report-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(100, 116, 139, 0.4);
-            background: linear-gradient(135deg, #475569 0%, #64748b 100%);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6b5b95 100%);
         }
         
         .tag {
             display: inline-block;
-            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
-            color: #475569;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            color: #667eea;
             padding: 0.4rem 1rem;
             border-radius: 20px;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 1.5rem;
-            border: 1px solid rgba(71, 85, 105, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         
         .footer {

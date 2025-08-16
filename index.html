@@ -21,13 +21,15 @@
         }
         
         body {
-            font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .container {
@@ -43,13 +45,13 @@
         
         .hero h1 {
             font-size: 4rem;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 1.5rem;
-            text-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            background: linear-gradient(45deg, #475569, #64748b);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.025em;
         }
         
         .hero p {
@@ -68,13 +70,14 @@
         }
         
         .nav-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
             padding: 3rem 2rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
             overflow: hidden;
             text-decoration: none;
@@ -87,14 +90,15 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #64748b, #94a3b8);
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px 24px 0 0;
         }
         
         .nav-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.25);
-            background: rgba(255, 255, 255, 1);
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.95);
         }
         
         .nav-icon {
@@ -102,21 +106,27 @@
             margin-bottom: 1.5rem;
             display: block;
             filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+            text-align: center;
+            line-height: 1;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+            font-variant-emoji: emoji;
         }
         
         .nav-title {
             font-size: 2rem;
-            font-weight: 700;
-            color: #2c3e50;
+            font-weight: 600;
+            color: #1a202c;
             margin-bottom: 1rem;
             line-height: 1.2;
+            letter-spacing: -0.025em;
         }
         
         .nav-description {
-            color: #64748b;
+            color: #4a5568;
             font-size: 1.1rem;
             line-height: 1.6;
             margin-bottom: 1.5rem;
+            font-weight: 400;
         }
         
         .nav-stats {
@@ -133,32 +143,34 @@
         
         .stat-number {
             font-size: 1.5rem;
-            font-weight: 700;
-            color: #64748b;
+            font-weight: 600;
+            color: #667eea;
             display: block;
         }
         
         .stat-label {
             font-size: 0.9rem;
-            color: #64748b;
+            color: #718096;
             margin-top: 0.25rem;
-        }
-        
-        .footer {
-            color: rgba(71, 85, 105, 0.8);
-            font-size: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .footer a {
-            color: #475569;
-            text-decoration: none;
             font-weight: 500;
         }
         
+        .footer {
+            color: rgba(74, 85, 104, 0.8);
+            font-size: 1rem;
+            margin-top: 2rem;
+            font-weight: 400;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
         .footer a:hover {
-            color: #64748b;
-            text-decoration: underline;
+            color: #764ba2;
         }
         
         @media (max-width: 768px) {
