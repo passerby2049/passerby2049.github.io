@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>投资报告 - 个人学习空间</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #475569;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.025em;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #667eea;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
+        }
+        
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .report-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .report-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px 24px 0 0;
+        }
+        
+        .report-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .report-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+            text-align: center;
+            line-height: 1;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+            font-variant-emoji: emoji;
+        }
+        
+        .report-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+        }
+        
+        .report-description {
+            color: #64748b;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .report-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .report-features li {
+            color: #475569;
+            margin-bottom: 0.6rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .report-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .report-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            width: 100%;
+            justify-content: center;
+            border: none;
+        }
+        
+        .report-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6b5b95 100%);
+        }
+        
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            color: #667eea;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(71, 85, 105, 0.8);
+            font-size: 0.95rem;
+            margin-top: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .reports-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .report-card {
+                padding: 1.5rem;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 投资报告</h1>
+            <p>深度分析具体投资标的，提供详尽的研究报告和投资建议</p>
+            <a href="../" class="nav-link">
+                ← 返回首页
+            </a>
+        </div>
+        
+        <div class="reports-grid">
+            <div class="report-card">
+                <div class="tag">数字资产</div>
+                <div class="report-icon">🚀</div>
+                <h3 class="report-title">Galaxy Digital 投资分析报告</h3>
+                <p class="report-description">
+                    深度剖析Galaxy Digital的双轨引擎模式，探索数字资产与AI基础设施融合的投资机遇。
+                </p>
+                <ul class="report-features">
+                    <li>数字资产金融平台业务深度分析</li>
+                    <li>AI数据中心转型战略解读</li>
+                    <li>SOTP分类加总估值逻辑详解</li>
+                    <li>管理层团队与战略评估</li>
+                    <li>最新市场动态与投资展望</li>
+                </ul>
+                <a href="galaxy.html" class="report-button">
+                    查看报告 →
+                </a>
+            </div>
+            
+            <div class="report-card">
+                <div class="tag">财务分析</div>
+                <div class="report-icon">📊</div>
+                <h3 class="report-title">深入浅出EBITDA全面解析</h3>
+                <p class="report-description">
+                    交互式学习金融界的"瑞士军刀"，掌握EBITDA的应用场景、计算方法和局限性。
+                </p>
+                <ul class="report-features">
+                    <li>EBITDA组成部分交互式拆解</li>
+                    <li>行业估值倍数比较分析</li>
+                    <li>现金流幻觉可视化演示</li>
+                    <li>EBITDA变体家族全景图</li>
+                    <li>分析师终极使用清单</li>
+                </ul>
+                <a href="ebitda.html" class="report-button">
+                    查看报告 →
+                </a>
+            </div>
+            
+            <div class="report-card">
+                <div class="tag">会计准则</div>
+                <div class="report-icon">📋</div>
+                <h3 class="report-title">深入理解股票中的GAAP</h3>
+                <p class="report-description">
+                    投资者必备的财务报表解读指南，掌握GAAP原则，看懂公司财报背后的真实故事。
+                </p>
+                <ul class="report-features">
+                    <li>权责发生制交互式演示</li>
+                    <li>收入确认原则可视化</li>
+                    <li>GAAP vs Non-GAAP对比分析</li>
+                    <li>10-K报告关键章节导读</li>
+                    <li>US GAAP vs IFRS差异解析</li>
+                </ul>
+                <a href="gaap.html" class="report-button">
+                    查看报告 →
+                </a>
+            </div>
+            
+            <div class="report-card">
+                <div class="tag">估值指标</div>
+                <div class="report-icon">🎯</div>
+                <h3 class="report-title">深入浅出理解市盈率 (PE)</h3>
+                <p class="report-description">
+                    全面掌握投资分析中最重要的估值指标，从基础概念到专家级应用的完整指南。
+                </p>
+                <ul class="report-features">
+                    <li>市盈率交互式计算器</li>
+                    <li>PE大家族类型详解</li>
+                    <li>行业估值倍数对比分析</li>
+                    <li>PEG增长调整工具</li>
+                    <li>NVDA vs 公用事业案例分析</li>
+                </ul>
+                <a href="pe.html" class="report-button">
+                    查看报告 →
+                </a>
+            </div>
+            
+            <div class="report-card">
+                <div class="tag">投资哲学</div>
+                <div class="report-icon">🧘</div>
+                <h3 class="report-title">段永平投资哲学交互式探索</h3>
+                <p class="report-description">
+                    深入探索段永平"做对的事情"和"买股票就是买公司"的价值投资哲学，理解实业家视角的投资智慧。
+                </p>
+                <ul class="report-features">
+                    <li>投资第一性原理与核心信仰解析</li>
+                    <li>"不为清单"风险控制体系详解</li>
+                    <li>贵州茅台、网易、苹果三大经典案例</li>
+                    <li>"毛估估"估值艺术与思维方式</li>
+                    <li>平常心与长期主义的投资修行</li>
+                </ul>
+                <a href="duan-yong-ping.html" class="report-button">
+                    查看报告 →
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>持续更新中，更多深度投资分析报告敬请期待...</p>
+        </div>
+    </div>
+</body>
+</html>

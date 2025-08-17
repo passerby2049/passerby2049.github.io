@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>实用工具 - 个人学习空间</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #475569;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.025em;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #667eea;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .tool-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px 24px 0 0;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+            text-align: center;
+            line-height: 1;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+            font-variant-emoji: emoji;
+        }
+        
+        .tool-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+        }
+        
+        .tool-description {
+            color: #64748b;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tool-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .tool-features li {
+            color: #475569;
+            margin-bottom: 0.6rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .tool-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .tool-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            width: 100%;
+            justify-content: center;
+            border: none;
+        }
+        
+        .tool-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6b5b95 100%);
+        }
+        
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            color: #475569;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(71, 85, 105, 0.2);
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(71, 85, 105, 0.8);
+            font-size: 0.95rem;
+            margin-top: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .tool-card {
+                padding: 1.5rem;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 实用工具</h1>
+            <a href="../" class="nav-link">
+                ← 返回首页
+            </a>
+        </div>
+        
+        <div class="tools-grid">
+            <div class="tool-card">
+                <div class="tag">理财规划</div>
+                <div class="tool-icon">💰</div>
+                <h3 class="tool-title">退休计算器</h3>
+                <p class="tool-description">
+                    智能退休理财计算器，帮您规划未来的财务自由之路。支持多种计算模式，精准预测退休资金需求。
+                </p>
+                <ul class="tool-features">
+                    <li>三种计算模式：余额验证、存款计算、支出计算</li>
+                    <li>考虑通胀率和投资收益率的精确建模</li>
+                    <li>支出衰减模型，更贴近现实的消费规律</li>
+                    <li>直观的图表展示年度资产变化趋势</li>
+                    <li>精确到千元的高精度计算结果</li>
+                </ul>
+                <a href="retirement-calculator.html" class="tool-button">
+                    开始计算 →
+                </a>
+            </div>
+            
+            <div class="tool-card">
+                <div class="tag">摄影分析</div>
+                <div class="tool-icon">📷</div>
+                <h3 class="tool-title">照片焦段统计</h3>
+                <p class="tool-description">
+                    专业的摄影数据分析工具，通过EXIF信息统计您的拍摄习惯，帮助优化器材配置和拍摄技巧。
+                </p>
+                <ul class="tool-features">
+                    <li>批量处理照片EXIF数据的高效分析</li>
+                    <li>多设备焦段使用统计与对比分析</li>
+                    <li>智能裁切修正功能，确保数据准确性</li>
+                    <li>可调节分组粒度，满足不同分析需求</li>
+                    <li>直观的柱状图展示，一目了然的数据呈现</li>
+                </ul>
+                <a href="photo-focal-analyzer.html" class="tool-button">
+                    分析照片 →
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>持续开发中，更多实用工具即将上线...</p>
+        </div>
+    </div>
+</body>
+</html>

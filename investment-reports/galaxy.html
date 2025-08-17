@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaxy Digital (GLXY) 交互式投资分析报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Digital Horizon -->
+    <!-- Application Structure Plan: 本应用采用单页仪表盘式布局，通过顶部粘性导航栏引导用户探索三大核心主题：业务模式、管理团队和估值分析。这种结构旨在将复杂的投资报告转化为一个清晰、有叙事性的交互体验。用户首先看到的是总结性的投资论点，然后可以深入探索每个支持该论点的部分。通过将数字资产和AI基础设施两大业务并列展示，并使用交互式图表解释SOTP估值法，应用能帮助用户快速把握GLXY从“纯加密货币公司”向“混合型AI基础设施巨头”转型的核心故事线，从而做出更明智的判断。 -->
+    <!-- Visualization & Content Choices:
+        - 报告信息: 公司转型战略 -> 目标: 强调核心投资论点 -> 呈现方式: 顶部英雄区域，突出三大业务支柱 -> 交互: 无 -> 理由: 开门见山，迅速建立用户认知。
+        - 报告信息: Q2业务部门业绩 -> 目标: 对比展示各部门表现 -> 呈现方式: 使用标签页(Tabs)和动态数字计数器 -> 交互: 点击切换 -> 理由: 在有限空间内清晰展示多组数据，动态效果吸引眼球。
+        - 报告信息: Helios数据中心经济效益 -> 目标: 凸显AI业务的巨大潜力 -> 呈现方式: 大型卡片式信息图，结合进度条展示扩张潜力 -> 交互: 悬停提示 -> 理由: 视觉冲击力强，直观传达其规模和确定性。
+        - 报告信息: SOTP估值逻辑 -> 目标: 简化复杂的估值方法 -> 呈现方式: 交互式HTML/CSS图解，而非静态表格 -> 交互: 悬停显示计算细节 -> 理由: 将抽象概念具象化，引导用户理解内在价值的构成。
+        - 报告信息: 同行估值对比 -> 目标: 提供相对估值的市场背景 -> 呈现方式: Chart.js条形图 -> 交互: 图表工具提示 -> 理由: 条形图是比较同类公司指标最直观的方式。
+        - 报告信息: 分析师评级与目标价 -> 目标: 展示市场共识和潜在上行空间 -> 呈现方式: Chart.js组合图（线形+条形） -> 交互: 图表工具提示 -> 理由: 直观显示当前价格与目标的差距。
+        - 库/方法: Chart.js用于所有图表，自定义JS用于数字动画和交互逻辑，Tailwind CSS用于布局和样式。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #1a202c;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .nav-link {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .sotp-card {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .sotp-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<header class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm border-b border-white/20">
+    <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center gap-4">
+                <a href="./" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all font-medium text-sm shadow-lg">
+                    ← 返回投资报告
+                </a>
+                <span class="font-bold text-xl text-gray-800">Galaxy Digital (GLXY)</span>
+            </div>
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-4">
+                    <a href="#hero" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">投资论点</a>
+                    <a href="#business" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">业务分析</a>
+                    <a href="#people" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">管理层评估</a>
+                    <a href="#price" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">估值分析</a>
+                    <a href="#outlook" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">最新展望</a>
+                    <a href="#verdict" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-700 border-b-2 border-transparent">结论</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section id="hero" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
+                <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Galaxy Digital: 投资于数字经济的双引擎</span>
+            </h1>
+            <p class="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-gray-600 mb-8">
+                本报告将深入剖析Galaxy Digital，论证其为何同时满足"正确的业务"、"正确的管理层"和"正确的价格"三大投资标准，是布局未来的卓越选择。
+            </p>
+            <div class="flex justify-center mb-8">
+                <a href="../assets/Galaxy Digital 投资价值分析.pdf" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-lg">
+                    📄 下载完整PDF报告
+                </a>
+            </div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                <div class="bg-gray-50 p-6 rounded-xl shadow-md transition-transform hover:scale-105">
+                    <h3 class="text-lg font-bold text-gray-800">✅ 正确的业务</h3>
+                    <p class="mt-2 text-gray-600">创新的混合模式，将高波动的数字资产金融与高稳定的人工智能基础设施相结合，有效对冲风险，捕捉两大时代机遇。</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl shadow-md transition-transform hover:scale-105">
+                    <h3 class="text-lg font-bold text-gray-800">✅ 正确的管理层</h3>
+                    <p class="mt-2 text-gray-600">富有远见的创始人、经验丰富的专业团队，以及日益成熟、具备高度战略眼光的董事会，共同为宏伟蓝图保驾护航。</p>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-xl shadow-md transition-transform hover:scale-105">
+                    <h3 class="text-lg font-bold text-gray-800">✅ 正确的价格</h3>
+                    <p class="mt-2 text-gray-600">市场可能尚未完全消化其AI业务的巨大价值。基于分类加总法（SOTP）的分析表明，当前股价存在显著的重估空间。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="business" class="py-16 md:py-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">正确的业务：剖析Galaxy的双轨引擎</h2>
+                <p class="mt-3 max-w-3xl mx-auto text-lg text-gray-600">本节将深入探讨Galaxy的两大核心业务部门，展示其如何战略性地立足于本十年两个最强大的增长趋势：数字资产的机构化和AI算力的爆发式需求。</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+
+                <div class="fade-in p-6 md:p-8 rounded-2xl glass-card shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 bg-gradient-to-r from-yellow-400/80 to-amber-400/80 rounded-lg mr-4">
+                            <span class="text-2xl">🏦</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800">数字资产金融平台</h3>
+                    </div>
+                    <p class="text-gray-700 mb-6">作为机构投资者的门户，提供全面的数字资产交易、借贷、资管和投行服务，是公司业务的基石和现金牛。</p>
+
+                    <div class="mb-4 border-b border-gray-200">
+                        <nav class="flex -mb-px" aria-label="Tabs">
+                            <button id="tab-gm" class="tab-btn w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm text-[#64748b] border-[#64748b]">全球市场</button>
+                            <button id="tab-amis" class="tab-btn w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-500 border-transparent hover:text-gray-700 hover:border-gray-300">资产管理 (AMIS)</button>
+                        </nav>
+                    </div>
+
+                    <div id="content-gm">
+                        <h4 class="font-semibold text-lg mb-2">Q2 2025 业绩 (全球市场)</h4>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div class="bg-white/70 p-4 rounded-lg">
+                                <p class="text-xs text-gray-500">调整后毛利润</p>
+                                <p class="text-2xl font-bold text-green-600">$5540万</p>
+                                <p class="text-xs text-green-500">环比增长 +28%</p>
+                            </div>
+                            <div class="bg-white/70 p-4 rounded-lg">
+                                <p class="text-xs text-gray-500">平均贷款规模</p>
+                                <p class="text-2xl font-bold text-gray-800">$11.07亿</p>
+                                <p class="text-xs text-gray-500">需求强劲</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-4">尽管市场交易量下滑，但该部门表现出众，并成功为Robinhood收购Bitstamp提供独家财顾服务，彰显投行实力。</p>
+                    </div>
+                    <div id="content-amis" class="hidden">
+                        <h4 class="font-semibold text-lg mb-2">Q2 2025 业绩 (AMIS)</h4>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div class="bg-white/70 p-4 rounded-lg">
+                                <p class="text-xs text-gray-500">调整后毛利润</p>
+                                <p class="text-2xl font-bold text-red-600">$1600万</p>
+                                <p class="text-xs text-red-500">环比下降 -26%</p>
+                            </div>
+                            <div class="bg-white/70 p-4 rounded-lg">
+                                <p class="text-xs text-gray-500">平台总资产</p>
+                                <p class="text-2xl font-bold text-green-600">$89.21亿</p>
+                                <p class="text-xs text-green-500">环比增长 +27%</p>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mt-4">虽然质押奖励因市场活动减少而下降，但平台总资产在资产升值和净流入推动下强劲增长，显示客户持续信任。</p>
+                    </div>
+                </div>
+
+                <div class="fade-in p-6 md:p-8 rounded-2xl glass-card shadow-lg border-2 border-[#64748b]">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 bg-gradient-to-r from-blue-500/80 to-cyan-500/80 rounded-lg mr-4">
+                            <span class="text-2xl">⚡️</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800">转型之举：AI数据中心</h3>
+                    </div>
+                    <p class="text-gray-700 mb-6">将Helios设施从比特币挖矿转型为AI/HPC托管服务，这是公司未来价值增长的核心催化剂，显著降低了整体业务风险。</p>
+
+                    <div class="bg-white/70 p-6 rounded-lg">
+                        <h4 class="font-semibold text-lg mb-1">与 CoreWeave 的基石协议</h4>
+                        <p class="text-sm text-gray-500 mb-4">一份为期15年的三净租赁合同，锁定了长期、稳定的现金流。这是一个<strong>未来预期</strong>，预计2026上半年开始产生收入。</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">预期年均收入</span>
+                                <span class="font-bold text-2xl text-green-600">> $10亿</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">预期年均EBITDA</span>
+                                <span class="font-bold text-2xl text-green-600">~ $9亿</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium">EBITDA 利润率</span>
+                                <span class="font-bold text-2xl text-green-600">~ 90%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <h4 class="font-semibold text-lg mb-2">未来扩张潜力</h4>
+                        <p class="text-sm text-gray-600 mb-2">已收购邻近土地，将Helios园区总潜力提升至3.5吉瓦(GW)，为成为AI基础设施巨头铺平道路。</p>
+                        <div class="w-full bg-gray-200 rounded-full h-4">
+                            <div class="bg-gradient-to-r from-blue-500 to-cyan-400 h-4 rounded-full" style="width: 22.8%;"></div>
+                        </div>
+                        <div class="flex justify-between text-xs mt-1">
+                            <span>当前: 800 MW</span>
+                            <span>总潜力: 3.5 GW</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="people" class="py-16 md:py-20 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">正确的管理层：评估掌舵者</h2>
+                <p class="mt-3 max-w-3xl mx-auto text-lg text-gray-600">一家公司的成功离不开卓越的领导。本节将分析Galaxy的创始人、高管团队及董事会，评估他们是否是带领公司走向成功的“正确的人”。</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="fade-in">
+                    <div class="bg-gray-50 p-8 rounded-xl shadow-lg">
+                        <img src="https://placehold.co/100x100/E9ECEF/495057?text=MN" alt="Michael Novogratz" class="w-24 h-24 rounded-full mx-auto -mt-16 border-4 border-white">
+                        <h3 class="text-center text-2xl font-bold mt-4">Michael Novogratz</h3>
+                        <p class="text-center text-gray-500">创始人 & CEO</p>
+                        <ul class="mt-6 space-y-3 text-gray-700">
+                            <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✓</span><div><strong>华尔街老将:</strong> 曾任高盛合伙人与峰堡投资高管，拥有深厚的传统金融背景和机构信誉。</div></li>
+                            <li class="flex items-start"><span class="text-green-500 mr-3 mt-1">✓</span><div><strong>加密货币信徒:</strong> 早在2013年即投身比特币，是行业内高调且坚定的倡导者，其愿景与公众形象是公司重要资产。</div></li>
+                            <li class="flex items-start"><span class="text-yellow-500 mr-3 mt-1">⚠️</span><div><strong>风险偏好:</strong> 曾高调支持Luna等高风险项目，存在一定的判断风险，但公司整体风控有效，FTX敞口控制在资本4%以内。</div></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="fade-in">
+                    <h3 class="text-2xl font-bold mb-4">战略性董事会与专业化团队</h3>
+                    <p class="text-gray-600 mb-6">除了富有远见的创始人，Galaxy还拥有一个日益成熟的董事会和专业的高管团队，为公司的宏伟蓝图提供战略支持和执行保障。</p>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                        <h4 class="font-bold text-lg text-blue-800">关键任命：Doug Deason</h4>
+                        <p class="mt-2 text-blue-700">任命拥有深厚德州政商背景的Doug Deason为独立董事，并非一次常规更新，而是一项旨在<strong>降低Helios数据中心项目执行风险</strong>的战略举措。这表明董事会具备高度的远见和治理成熟度，能够主动为公司的核心战略保驾护航。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="price" class="py-16 md:py-20">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">正确的价格：揭示内在价值</h2>
+                <p class="mt-3 max-w-3xl mx-auto text-lg text-gray-600">鉴于其独特的双业务模式，传统的估值方法可能失效。本节将采用分类加总估值法（SOTP）的思路，来探究GLXY的真实内在价值，并与市场观点进行对比。</p>
+            </div>
+
+            <div class="fade-in bg-white p-6 md:p-8 rounded-2xl shadow-xl">
+                <h3 class="text-2xl font-bold text-center mb-6">分类加总估值 (SOTP) 逻辑拆解</h3>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-center text-center">
+                    <div class="md:col-span-2 p-4 border border-gray-200 rounded-lg h-full flex flex-col justify-center sotp-card">
+                        <h4 class="font-bold text-lg text-[#64748b]">AI数据中心业务价值</h4>
+                        <p class="text-sm text-gray-500">(基于未来合同现金流)</p>
+                        <p class="sotp-details hidden text-xs mt-2 bg-gray-100 p-2 rounded">~9亿美元预期年均EBITDA x 20-25倍估值倍数 (折现回现值)</p>
+                    </div>
+
+                    <div class="text-3xl font-light text-gray-400">+</div>
+
+                    <div class="md:col-span-2 p-4 border border-gray-200 rounded-lg h-full flex flex-col justify-center sotp-card">
+                        <h4 class="font-bold text-lg text-yellow-600">数字资产业务价值</h4>
+                        <p class="text-sm text-gray-500">(基于市净率相对估值)</p>
+                        <p class="sotp-details hidden text-xs mt-2 bg-gray-100 p-2 rounded">26.2亿美元账面价值 x 行业平均P/B倍数</p>
+                    </div>
+                </div>
+                <p class="text-center mt-6 text-gray-700 font-medium">核心观点：市场目前更关注波动性大的“数字资产业务”，而对稳定、高利润的“AI数据中心业务”的巨大价值定价不足，这正是潜在的重估机会所在。(将鼠标悬停在上方卡片上查看估值逻辑)</p>
+            </div>
+
+            <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="fade-in bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4">同行市净率(P/B)对比 (USD)</h3>
+                    <div class="chart-container">
+                        <canvas id="pbRatioChart"></canvas>
+                    </div>
+                </div>
+                <div class="fade-in bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-xl font-bold text-center mb-4">分析师评级与目标价 (USD)</h3>
+                    <div class="chart-container">
+                        <canvas id="analystTargetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Outlook -->
+    <section id="outlook" class="py-16 md:py-20 bg-blue-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900">最新动态与第三季度展望：顺风增强</h2>
+                <p class="mt-3 max-w-3xl mx-auto text-lg text-gray-600">本报告的财务数据基于截至6月30日的第二季度业绩。然而，自7月以来，市场环境和公司层面均出现了显著的积极发展，进一步强化了本报告的投资论点。</p>
+            </div>
+            <div class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-lg">
+                <h3 class="text-2xl font-bold mb-6 text-center">关键积极信号 (2025年第三季度至今)</h3>
+                <ul class="space-y-4">
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 text-green-800 flex items-center justify-center mr-4 mt-1">
+                            <span>📈</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">机构资金加速流入</h4>
+                            <p class="text-gray-700">报告显示，2025年7月流入数字资产投资产品的机构资金达到创纪录的<strong>112亿美元</strong>。这一强劲势头延续至8月，表明机构对加密资产的信心正在显著回升，这将直接利好Galaxy的交易和资管业务。</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 text-green-800 flex items-center justify-center mr-4 mt-1">
+                            <span>🚀</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">主要资产价格回暖</h4>
+                            <p class="text-gray-700">自7月初以来，比特币价格已突破<strong>12万美元</strong>的历史新高。资产价格的上涨将直接提升Galaxy资产负债表的价值和其资产管理业务的规模。</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 text-green-800 flex items-center justify-center mr-4 mt-1">
+                            <span>🤝</span>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">Helios项目取得新进展</h4>
+                            <p class="text-gray-700">Galaxy在8月初的财报中披露，其合作伙伴CoreWeave已在第三季度行使其最终选择权，承诺租用Helios数据中心<strong>全部800兆瓦</strong>的电力容量。这消除了关于该项目能否完全租出的不确定性，锁定了未来的现金流。</p>
+                        </div>
+                    </li>
+                </ul>
+                <p class="mt-8 text-center text-gray-800 font-semibold">这些最新的发展意味着，本报告基于第二季度数据进行的估值分析可能偏于保守。市场的积极势头为公司的数字资产业务提供了额外的上行空间，从而增加了投资的安全边际。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="verdict" class="py-16 md:py-20 bg-gray-800 text-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold">最终结论与投资建议</h2>
+                <p class="mt-3 max-w-3xl mx-auto text-lg text-gray-300">综合以上分析，我们认为Galaxy Digital具备成为一项卓越长期投资的潜力。</p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-gray-700/50 p-8 rounded-2xl">
+                <div class="text-center mb-6">
+                    <span class="text-lg font-semibold">投资建议</span>
+                    <p class="text-4xl font-bold text-green-400 mt-1">买入</p>
+                    <p class="text-gray-400 mt-2">(适用于具备3-5年投资视野、能承受短期波动的投资者)</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+                    <div class="bg-green-900/50 p-4 rounded-lg border border-green-400/30">
+                        <h4 class="font-bold text-green-300 mb-2">看涨情景 (Bull Case)</h4>
+                        <ul class="space-y-2 list-disc list-inside text-gray-200">
+                            <li>Helios项目成功交付，带来巨额稳定现金流。</li>
+                            <li>股票与加密市场的相关性减弱，引发价值重估。</li>
+                            <li>数字资产业务受益于下一轮牛市周期。</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-900/50 p-4 rounded-lg border border-red-400/30">
+                        <h4 class="font-bold text-red-300 mb-2">看跌情景 (Bear Case)</h4>
+                        <ul class="space-y-2 list-disc list-inside text-gray-200">
+                            <li>Helios项目改造出现重大延误或成本超支。</li>
+                            <li>长期的加密熊市持续损害数字资产业务。</li>
+                            <li>遭遇比预期更强的监管阻力。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-gray-900 text-white">
+    <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-400">
+        <p>本应用根据公开分析报告生成，仅供信息参考和研究目的，不构成任何投资建议。</p>
+        <p>&copy; 2025 交互式投资分析. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const tabGm = document.getElementById('tab-gm');
+        const tabAmis = document.getElementById('tab-amis');
+        const contentGm = document.getElementById('content-gm');
+        const contentAmis = document.getElementById('content-amis');
+
+        tabGm.addEventListener('click', () => {
+            tabGm.classList.add('text-[#64748b]', 'border-[#64748b]');
+            tabGm.classList.remove('text-gray-500', 'border-transparent');
+            tabAmis.classList.add('text-gray-500', 'border-transparent');
+            tabAmis.classList.remove('text-[#64748b]', 'border-[#64748b]');
+            contentGm.classList.remove('hidden');
+            contentAmis.classList.add('hidden');
+        });
+
+        tabAmis.addEventListener('click', () => {
+            tabAmis.classList.add('text-[#64748b]', 'border-[#64748b]');
+            tabAmis.classList.remove('text-gray-500', 'border-transparent');
+            tabGm.classList.add('text-gray-500', 'border-transparent');
+            tabGm.classList.remove('text-[#64748b]', 'border-[#64748b]');
+            contentAmis.classList.remove('hidden');
+            contentGm.classList.add('hidden');
+        });
+
+        const sotpCards = document.querySelectorAll('.sotp-card');
+        sotpCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.querySelector('.sotp-details').classList.remove('hidden');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.querySelector('.sotp-details').classList.add('hidden');
+            });
+        });
+
+        const faders = document.querySelectorAll('.fade-in');
+        const appearOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+        const appearOnScroll = new IntersectionObserver(function(entries, appearOnScroll) {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) {
+                    return;
+                } else {
+                    entry.target.classList.add('visible');
+                    appearOnScroll.unobserve(entry.target);
+                }
+            });
+        }, appearOptions);
+
+        faders.forEach(fader => {
+            appearOnScroll.observe(fader);
+        });
+
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '-50% 0px -50% 0px',
+            threshold: 0
+        };
+
+        const sectionObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const currentId = entry.target.id;
+                    navLinks.forEach(link => {
+                        link.classList.toggle('active', link.getAttribute('href').substring(1) === currentId);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            sectionObserver.observe(section);
+        });
+
+
+        const chartFontColor = '#495057';
+        const gridColor = '#dee2e6';
+
+        const pbRatioCtx = document.getElementById('pbRatioChart').getContext('2d');
+        new Chart(pbRatioCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Riot Platforms', 'Galaxy (GLXY)', 'Coinbase (COIN)'],
+                datasets: [{
+                    label: '市净率 (P/B)',
+                    data: [1.3, 3.1, 6.8],
+                    backgroundColor: [
+                        'rgba(108, 117, 125, 0.7)',
+                        'rgba(100, 116, 139, 0.7)',
+                        'rgba(255, 193, 7, 0.7)',
+                    ],
+                    borderColor: [
+                        'rgb(108, 117, 125)',
+                        'rgb(100, 116, 139)',
+                        'rgb(255, 193, 7)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` P/B: ${context.raw}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: chartFontColor },
+                        grid: { color: gridColor }
+                    },
+                    x: {
+                        ticks: { color: chartFontColor },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        const analystTargetCtx = document.getElementById('analystTargetChart').getContext('2d');
+        new Chart(analystTargetCtx, {
+            type: 'bar',
+            data: {
+                labels: ['当前股价 (USD)', '分析师平均目标价 (USD)'],
+                datasets: [{
+                    label: '价格 (美元)',
+                    data: [28.50, 37.00],
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.7)',
+                        'rgba(25, 135, 84, 0.7)',
+                    ],
+                    borderColor: [
+                        'rgb(255, 193, 7)',
+                        'rgb(25, 135, 84)',
+                    ],
+                    borderWidth: 1,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` $${context.raw.toFixed(2)}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: chartFontColor,
+                            callback: function(value) {
+                                return '$' + value;
+                            }
+                        },
+                        grid: { color: gridColor }
+                    },
+                    y: {
+                        ticks: { color: chartFontColor },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

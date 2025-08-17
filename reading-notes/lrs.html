@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《杠杆轮动策略》读书笔记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .back-home:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        .content-card {
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .flow-arrow {
+            font-size: 2rem;
+            line-height: 1;
+            color: #64748b;
+        }
+        .risk-card {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 5px solid #ef4444;
+        }
+        .checklist-item {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-left: 4px solid #22c55e;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<a href="./" class="back-home">← 返回读书笔记</a>
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <h1 class="text-2xl md:text-3xl font-bold text-center gradient-text">《杠杆轮动策略》读书笔记</h1>
+        <p class="text-center text-gray-500 mt-1">一个诱人的承诺，以及它背后的残酷真相</p>
+    </div>
+</header>
+
+<main class="container mx-auto p-4 md:p-8">
+
+    <section id="the-promise" class="mb-12">
+        <div class="text-center p-8 bg-white rounded-lg shadow-xl border-t-4 border-[#64748b]">
+            <h2 class="text-3xl font-bold text-[#475569] mb-4">故事的开端：一个诱人的承诺</h2>
+            <p class="text-2xl italic text-gray-600 max-w-3xl mx-auto">杠杆是把双刃剑。用好了，它能让你的收益一飞冲天；用不好，它会让你粉身碎骨。尤其是在市场剧烈震荡时，杠杆的"每日耗损"会无情地吞噬你的本金，哪怕市场最终是上涨的。</p>
+        </div>
+
+        <div class="grid md:grid-cols-1 gap-8 mt-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-[#64748b] mb-4 text-center">"恒定杠杆陷阱"：为何上涨也亏钱？</h3>
+                <p class="text-gray-700 mb-4 text-center">以2011年8月为例，短短6天，标普500指数最终上涨0.51%，但2倍和3倍杠杆ETF却分别亏损0.14%和2.02%。这就是波动性的威力——它惩罚杠杆。</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center">
+                        <thead class="bg-gray-50">
+                        <tr>
+                            <th class="p-3 font-semibold text-gray-700">策略</th>
+                            <th class="p-3 font-semibold text-gray-700">标普500 (无杠杆)</th>
+                            <th class="p-3 font-semibold text-red-600">2x 杠杆</th>
+                            <th class="p-3 font-semibold text-red-600">3x 杠杆</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="border-t border-gray-200">
+                            <td class="p-3 font-medium">6日累计回报</td>
+                            <td class="p-3 text-green-600 font-bold text-lg">+0.51%</td>
+                            <td class="p-3 text-red-600 font-bold text-lg">-0.14%</td>
+                            <td class="p-3 text-red-600 font-bold text-lg">-2.02%</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-center mt-6 text-gray-700">那么，有没有办法只在"对"的时候使用杠杆，而在"错"的时候全身而退呢？杠杆轮动策略（LRS）应运而生，它声称找到了那个"开关"。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="the-secret" class="mb-12">
+        <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+            <h2 class="text-3xl font-bold text-center text-[#475569] mb-6">揭开神秘面纱：那个简单的"开关"</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">LRS的秘密武器异常简单：200日移动平均线。它不被用作传统的买卖点指标，而是作为一个"天气预报员"，判断当前的市场环境是"晴天"还是"风暴"。</p>
+
+            <div class="content-card rounded-xl shadow-lg p-8">
+                <h3 class="text-xl font-semibold text-center mb-6 text-[#64748b]">核心机制：200日线作为"风险过滤器"</h3>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4">
+                    <div class="text-center p-6 border-2 border-dashed border-gray-300 rounded-lg">
+                        <p class="text-lg font-medium text-gray-700">标普500收盘价 vs. 200日移动平均线</p>
+                    </div>
+                    <div class="flow-arrow transform md:rotate-0 rotate-90">→</div>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <div class="text-center p-6 bg-green-50 border-2 border-green-200 rounded-lg flex-1">
+                            <p class="font-bold text-green-600 text-lg">高于均线 (晴天)</p>
+                            <p class="mt-2 text-gray-700"><strong>全力进攻：</strong>买入2x或3x杠杆ETF</p>
+                        </div>
+                        <div class="text-center p-6 bg-red-50 border-2 border-red-200 rounded-lg flex-1">
+                            <p class="font-bold text-red-600 text-lg">低于均线 (风暴)</p>
+                            <p class="mt-2 text-gray-700"><strong>全面防御：</strong>清仓并转入无风险国库券</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="the-results" class="mb-12">
+        <h2 class="text-3xl font-bold text-center text-[#475569] mb-6">纸面上的辉煌战绩</h2>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">当这个简单的规则被应用在近一个世纪的历史数据上时，结果是惊人的。它似乎打破了"高风险高回报"的铁律，实现了"更高回报，更低风险"的奇迹。</p>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="content-card rounded-xl p-6 lg:col-span-2">
+                <h3 class="text-xl font-semibold text-center mb-4 text-[#64748b]">年化回报率 vs 年化波动率 (1928-2020)</h3>
+                <div class="chart-container"><canvas id="performanceChart"></canvas></div>
+                <p class="text-center mt-4 text-sm text-gray-600">LRS策略（蓝色/青色）的回报率远超其他策略，而波动率却得到了有效控制。</p>
+            </div>
+            <div class="content-card rounded-xl p-6">
+                <h3 class="text-xl font-semibold text-center mb-4 text-[#64748b]">夏普比率 (风险回报效率)</h3>
+                <div class="chart-container"><canvas id="sharpeChart"></canvas></div>
+                <p class="text-center mt-4 text-sm text-gray-600">LRS的夏普比率遥遥领先，意味着它承担每单位风险所获得的回报最高。</p>
+            </div>
+            <div class="content-card rounded-xl p-6">
+                <h3 class="text-xl font-semibold text-center mb-4 text-[#64748b]">最大回撤 (最糟糕的亏损)</h3>
+                <div class="chart-container"><canvas id="drawdownChart"></canvas></div>
+                <p class="text-center mt-4 text-sm text-gray-600">LRS显著降低了最大亏损，避免了恒定杠杆策略近乎毁灭的打击。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="reality-check" class="mb-12">
+        <div class="bg-white rounded-lg shadow-xl p-6 md:p-8 border-t-4 border-red-500">
+            <h2 class="text-3xl font-bold text-center text-red-600 mb-6">冰冷的现实：房间里的大象</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">到目前为止，一切都美好的不真实。现在，是时候谈谈那些回测报告里不会用大字标题告诉你的残酷真相了。这些是决定策略生死的关键。</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="risk-card rounded-xl p-6 shadow-2xl md:col-span-2">
+                    <h3 class="text-2xl font-bold mb-2 text-red-700">真相一：致命的"震荡绞肉机" (Whipsaw)</h3>
+                    <p class="text-red-800">这是该策略最核心、最致命的风险。当市场失去明确方向，在200日均线附近反复拉锯时，这个策略会变成一台"绞肉机"。它会迫使你反复地"高买低卖"，每一次错误的信号都会割掉一小块本金，累积起来的亏损足以摧毁你的账户和信心。</p>
+                </div>
+                <div class="risk-card rounded-xl p-6 shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-2 text-red-700">真相二：过去的"圣杯"，未来的"魔咒"</h3>
+                    <p class="text-red-800">惊人的业绩，很可能是"回测过拟合"的产物。200日均线这个参数，可能只是完美地"记住"了过去90年的考题答案，但未来的考试会换一套全新的题目。</p>
+                </div>
+                <div class="risk-card rounded-xl p-6 shadow-2xl">
+                    <h3 class="text-2xl font-bold mb-2 text-red-700">真相三：你才是最薄弱的环节</h3>
+                    <p class="text-red-800">策略要求钢铁般的纪律。当市场震荡，策略连续犯错，或者牛市里你却因一个信号而空仓时，你能否克服内心的恐惧与贪婪，坚持执行？绝大多数人都不能。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="the-checklist" class="mb-12">
+        <h2 class="text-3xl font-bold text-center text-[#475569] mb-6">你的实操飞行检查清单</h2>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">读到这里，如果你依然对这个策略充满兴趣，并想亲自尝试。请在投入任何一分钱之前，像飞行员起飞前一样，逐一完成这份检查清单。</p>
+        <div class="space-y-6">
+            <div class="checklist-item rounded-lg p-6">
+                <h3 class="text-xl font-bold text-green-600 mb-2">☑ 1. 你是否为"震荡绞肉机"制定了应对方案？</h3>
+                <p class="text-gray-700">这是最重要的一步。策略必然会经历在均线附近反复拉锯的时期。你打算如何应对？是硬扛亏损，还是引入一个"缓冲带"（例如，价格必须突破均线3%才算有效）？或是增加一个确认指标（如木材/黄金比率）来过滤掉部分假信号？没有预案，你很可能会在最痛苦的时候放弃。</p>
+            </div>
+            <div class="checklist-item rounded-lg p-6">
+                <h3 class="text-xl font-bold text-green-600 mb-2">☑ 2. 你是否已将预期回报砍掉一半（甚至更多）？</h3>
+                <p class="text-gray-700">你必须发自内心地承认，论文里的回报是几乎不可能复制的"最佳情况"。将你的预期设定在更现实的水平，是避免未来失望和做出错误决策的第一步。</p>
+            </div>
+            <div class="checklist-item rounded-lg p-6">
+                <h3 class="text-xl font-bold text-green-600 mb-2">☑ 3. 你是否对策略进行了独立的"压力测试"？</h3>
+                <p class="text-gray-700">不要盲信论文。用更新的数据（如2021年至今）去回测，看看结果如何。尝试不同的参数（如150日或250日均线），看看策略是否依然稳健。如果微小的改动就让策略崩溃，那它就是脆弱的。</p>
+            </div>
+            <div class="checklist-item rounded-lg p-6">
+                <h3 class="text-xl font-bold text-green-600 mb-2">☑ 4. 你是否对自己进行了残酷的"心理审计"？</h3>
+                <p class="text-gray-700">诚实地问自己：我能承受-80%甚至-90%的回撤吗（即使它比恒定杠杆好）？我能忍受在牛市里空仓的"错失恐惧症"（FOMO）吗？如果答案是否定的，这个策略就不属于你。</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<section id="reference" class="mb-12">
+    <div class="bg-white rounded-lg shadow-xl p-6 md:p-8 border-t-4 border-[#64748b]">
+        <h2 class="text-3xl font-bold text-center text-[#475569] mb-6">参考文献</h2>
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <h3 class="text-lg font-bold text-gray-800 mb-2">原始论文</h3>
+                <p class="text-gray-700 mb-3">
+                    <strong>Leveraged ETF Rotation Strategy (LRS): Exploiting Mean Reversion and Momentum</strong><br>
+                    这是本读书笔记基于的核心学术论文，详细阐述了杠杆轮动策略的理论基础、历史回测和实施细节。
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="assets/ssrn-2741701.pdf" target="_blank" class="inline-flex items-center gap-2 bg-[#64748b] text-white px-4 py-2 rounded-lg hover:bg-[#475569] transition-colors">
+                        📄 查看原文PDF
+                    </a>
+                    <span class="text-sm text-gray-600 self-center">
+                        建议在阅读本笔记后，进一步研读原始论文以获得更深入的理解
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="text-center mt-20 pt-8 border-t border-gray-200">
+    <p class="text-gray-500">本报告仅为个人学习笔记与分析，旨在启发思考，不构成任何投资建议。市场有风险，投资需谨慎。</p>
+    <p class="text-sm text-gray-400 mt-2">可视化报告生成于 © 2025</p>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const colorPalette = {
+            bg: '#f8fafc',
+            text: '#1f2937',
+            accent1: '#64748b',
+            accent2: '#fb923c',
+            buyAndHold: '#60a5fa',
+            lrs2x: '#38bdf8',
+            lrs3x: '#2dd4bf',
+            constant2x: '#94a3b8',
+            constant3x: '#64748b',
+            positive: '#22c55e',
+            negative: '#f43f5e'
+        };
+
+        const defaultChartOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            scales: {
+                x: {
+                    ticks: { color: colorPalette.text, maxRotation: 0, minRotation: 0 },
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                },
+                y: {
+                    ticks: { color: colorPalette.text },
+                    grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: { color: colorPalette.text }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) {
+                                return label.join(' ');
+                            } else {
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('performanceChart'), {
+            type: 'bar',
+            data: {
+                labels: ['标普500', '恒定2x', '2x LRS', '3x LRS'],
+                datasets: [
+                    {
+                        label: '年化回报率 (%)',
+                        data: [9.4, 14.3, 19.0, 26.7],
+                        backgroundColor: colorPalette.accent1,
+                    },
+                    {
+                        label: '年化波动率 (%)',
+                        data: [18.9, 37.8, 24.9, 37.3],
+                        backgroundColor: colorPalette.accent2,
+                    }
+                ]
+            },
+            options: {
+                ...defaultChartOptions,
+                scales: {
+                    x: { ...defaultChartOptions.scales.x },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        ...defaultChartOptions.scales.y,
+                        title: { display: true, text: '百分比 (%)', color: colorPalette.text }
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('sharpeChart'), {
+            type: 'bar',
+            data: {
+                labels: ['标普500', '2x LRS', '3x LRS'],
+                datasets: [{
+                    label: '夏普比率',
+                    data: [0.32, 0.61, 0.61],
+                    backgroundColor: [colorPalette.buyAndHold, colorPalette.lrs2x, colorPalette.lrs3x],
+                }]
+            },
+            options: {...defaultChartOptions, plugins: { legend: { display: false }}}
+        });
+
+        new Chart(document.getElementById('drawdownChart'), {
+            type: 'bar',
+            data: {
+                labels: ['标普500', '恒定2x', '2x LRS'],
+                datasets: [{
+                    label: '最大回撤 (%)',
+                    data: [-86.2, -98.8, -78.7],
+                    backgroundColor: [colorPalette.buyAndHold, colorPalette.constant2x, colorPalette.lrs2x],
+                }]
+            },
+            options: {...defaultChartOptions, plugins: { legend: { display: false }}}
+        });
+
+    });
+</script>
+
+</body>
+</html>

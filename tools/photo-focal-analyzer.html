@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8" />
+    <title>照片焦段统计</title>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #1a202c;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            padding: 2.5rem;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .back-home:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        h1 {
+            margin-bottom: 2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            font-size: 2.5rem;
+            letter-spacing: -0.025em;
+        }
+        input[type="file"] {
+            padding: 1rem 1.5rem;
+            border: 2px dashed #64748b;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #64748b10, #94a3b810);
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #64748b;
+            display: block;
+            margin: 0 auto 2rem;
+            width: 100%;
+            max-width: 450px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        input[type="file"]:hover {
+            border-color: #5a6fd8;
+            background: linear-gradient(135deg, #64748b15, #94a3b815);
+            transform: translateY(-2px);
+        }
+        .control-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        .card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .card:hover {
+            border-color: #64748b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+        .card label {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            display: block;
+        }
+        .card small {
+            margin-top: 0.5rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        #granularityValue {
+            font-weight: 700;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 1rem 0;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e9ecef;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #64748b, #94a3b8);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #64748b;
+        }
+        #deviceCheckboxContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+        #deviceCheckboxContainer label {
+            background: #e9ecef;
+            border-radius: 12px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            margin-bottom: 0;
+        }
+        #deviceCheckboxContainer label:hover {
+            background: #64748b;
+            color: white;
+            transform: translateY(-1px);
+        }
+        #progressContainer {
+            margin-top: 2.5rem;
+            text-align: left;
+        }
+        #progressText {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        #progressBarBackground {
+            background: #e9ecef;
+            border-radius: 12px;
+            height: 16px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #progressBarFill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #64748b, #94a3b8);
+            transition: width 0.3s ease;
+            border-radius: 12px;
+        }
+        #chartContainer {
+            width: 100%;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 20px;
+            border: 1px solid #e9ecef;
+        }
+        #focalChart {
+            width: 100% !important;
+            min-height: 400px !important;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            .container {
+                padding: 2rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .control-section {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<a href="tools.html" class="back-home">← 返回工具</a>
+<div class="container">
+    <h1>📷 照片焦段统计</h1>
+    <input type="file" id="photoInput" multiple accept="image/jpeg" />
+
+    <div class="control-section">
+        <div class="card">
+            <label for="granularity">分组粒度 (mm)</label>
+            <input type="range" id="granularity" min="1" max="50" value="1" />
+            <span><span id="granularityValue">1</span> mm</span>
+        </div>
+
+        <div class="card">
+            <label for="cropEstimate">裁切修正</label>
+            <input type="checkbox" id="cropEstimate" />
+            <small>使用裁切后等效焦段</small>
+        </div>
+
+        <div class="card">
+            <label>选择设备</label>
+            <div id="deviceCheckboxContainer"></div>
+        </div>
+    </div>
+
+    <div id="progressContainer">
+        <div id="progressText">等待上传照片...</div>
+        <div id="progressBarBackground" style="background:#ddd; border-radius:8px; height:14px; overflow:hidden;">
+            <div id="progressBarFill" style="height:100%; width:0%; background:#3498db;"></div>
+        </div>
+    </div>
+
+    <div id="chartContainer">
+        <canvas id="focalChart"></canvas>
+    </div>
+</div>
+
+<script>
+    const input = document.getElementById('photoInput');
+    const progressText = document.getElementById('progressText');
+    const progressBarFill = document.getElementById('progressBarFill');
+    const chartCtx = document.getElementById('focalChart').getContext('2d');
+    const granularityInput = document.getElementById('granularity');
+    const granularityValue = document.getElementById('granularityValue');
+    const cropEstimate = document.getElementById('cropEstimate');
+    const deviceContainer = document.getElementById('deviceCheckboxContainer');
+    let chart;
+    let focalLengths = [];
+    let maxWidths = {};
+    let selectedDevices = new Set();
+
+    granularityInput.addEventListener('input', () => {
+        granularityValue.textContent = granularityInput.value;
+        drawChart();
+    });
+
+    cropEstimate.addEventListener('change', drawChart);
+
+    input.addEventListener('change', async (event) => {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        focalLengths = [];
+        maxWidths = {};
+        const maxConcurrency = 6;
+        let completed = 0;
+        const queue = files.slice();
+
+        progressText.textContent = `开始处理 ${files.length} 张照片...`;
+        progressBarFill.style.width = '0%';
+
+        const runWorker = async () => {
+            while (queue.length > 0) {
+                const file = queue.shift();
+                await processFile(file);
+                completed++;
+                const percent = Math.round((completed / files.length) * 100);
+                progressText.textContent = `处理进度：${completed} / ${files.length} 张 (${percent}%)`;
+                progressBarFill.style.width = `${percent}%`;
+                await new Promise(r => setTimeout(r, 0));
+            }
+        };
+
+        await Promise.all(Array.from({ length: maxConcurrency }, runWorker));
+        updateDeviceCheckboxes();
+        progressText.textContent = `✅ 完成！共处理 ${completed} 张照片`;
+        drawChart();
+    });
+
+    function processFile(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    EXIF.getData(img, function () {
+                        let focal = EXIF.getTag(this, "FocalLength");
+                        let make = EXIF.getTag(this, "Make") || "";
+                        let model = EXIF.getTag(this, "Model") || "Unknown";
+                        let device = `${make.trim()} ${model.trim()}`.trim();
+                        if (focal) {
+                            let val = typeof focal === 'object' && focal.numerator
+                                ? focal.numerator / focal.denominator
+                                : parseFloat(focal);
+                            const imgWidth = img.naturalWidth || img.width;
+                            if (!maxWidths[device] || imgWidth > maxWidths[device]) {
+                                maxWidths[device] = imgWidth;
+                            }
+                            focalLengths.push({ focal: val, width: imgWidth, device });
+                        }
+                        resolve();
+                    });
+                };
+                img.onerror = () => resolve();
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function updateDeviceCheckboxes() {
+        const devices = [...new Set(focalLengths.map(item => item.device))];
+        deviceContainer.innerHTML = '';
+        selectedDevices = new Set(devices);
+        devices.forEach(device => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = true;
+            checkbox.value = device;
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) selectedDevices.add(device);
+                else selectedDevices.delete(device);
+                drawChart();
+            });
+            label.appendChild(checkbox);
+            label.append(` ${device}`);
+            deviceContainer.appendChild(label);
+        });
+    }
+
+    function drawChart() {
+        const step = parseInt(granularityInput.value);
+        const useCrop = cropEstimate.checked;
+        const buckets = new Set();
+        const dataMap = {};
+
+        for (const item of focalLengths) {
+            if (!selectedDevices.has(item.device)) continue;
+            let f = item.focal;
+            const maxWidth = maxWidths[item.device] || item.width;
+            if (useCrop && item.width && maxWidth && item.width < maxWidth) {
+                f = f * (maxWidth / item.width);
+            }
+            const bucket = Math.floor(f / step) * step;
+            buckets.add(bucket);
+            dataMap[item.device] = dataMap[item.device] || {};
+            dataMap[item.device][bucket] = (dataMap[item.device][bucket] || 0) + 1;
+        }
+
+        const sortedBuckets = [...buckets].sort((a, b) => a - b);
+        const labels = sortedBuckets.map(b => `${b}-${b + step - 1}mm`);
+        const datasets = [...selectedDevices].map(device => {
+            return {
+                label: device,
+                data: sortedBuckets.map(b => dataMap[device]?.[b] || 0),
+                backgroundColor: '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'),
+                borderRadius: 6
+            };
+        });
+
+        if (chart) chart.destroy();
+        chart = new Chart(chartCtx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 30
+                        },
+                        title: {
+                            display: true,
+                            text: '焦段分组'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '出现次数'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: '#2980b9'
+                    }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>《聪明的投资者》读书笔记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .back-home:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+<a href="./" class="back-home">← 返回读书笔记</a>
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <h1 class="text-2xl md:text-3xl font-bold text-center gradient-text">《聪明的投资者》读书笔记</h1>
+        <p class="text-center text-gray-500 mt-1">本杰明·格雷厄姆的永恒智慧</p>
+    </div>
+</header>
+
+<main class="container mx-auto p-4 md:p-8">
+
+    <section id="foundation" class="mb-12">
+        <div class="text-center p-8 bg-white rounded-lg shadow-xl border-t-4 border-[#64748b]">
+            <h2 class="text-3xl font-bold text-[#475569] mb-4">投资的基石</h2>
+            <p class="text-2xl italic text-gray-600 max-w-3xl mx-auto">“投资成功的秘诀是拥有一个稳妥的知识体系作为决策基础，并有能力防止情绪侵蚀该体系。”</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 mt-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-2xl font-bold text-[#475569] mb-4 text-center">✅ 投资 vs. 投机 ❌</h3>
+                <p class="text-gray-700 mb-4">格雷厄姆的首要原则是区分投资与投机。这是一个根本性的选择，决定了你的行为和预期。</p>
+                <div class="flex flex-col space-y-4">
+                    <div class="border-l-4 border-green-500 p-4 bg-green-50 rounded-r-lg">
+                        <h4 class="font-bold text-lg">投资</h4>
+                        <ul class="list-disc list-inside text-gray-600 mt-2">
+                            <li>基于深入分析</li>
+                            <li>确保本金安全</li>
+                            <li>追求适当的回报</li>
+                        </ul>
+                    </div>
+                    <div class="border-l-4 border-red-500 p-4 bg-red-50 rounded-r-lg">
+                        <h4 class="font-bold text-lg">投机</h4>
+                        <ul class="list-disc list-inside text-gray-600 mt-2">
+                            <li>不满足投资标准</li>
+                            <li>关注市场情绪和价格波动</li>
+                            <li>风险极高</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col items-center justify-center text-center">
+                <h3 class="text-2xl font-bold text-[#64748b] mb-4">核心理念：安全边际</h3>
+                <div class="text-7xl font-black text-[#64748b] mb-4">🛡️</div>
+                <p class="text-gray-700 mb-2">安全边际指证券的市场价格与其评估的内在价值之间的差额。</p>
+                <p class="text-gray-600 font-medium">它是抵御判断失误、坏运气或市场非理性的缓冲垫，是所有价值投资的基石。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="mr-market" class="mb-12">
+        <div class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+            <h2 class="text-3xl font-bold text-center text-[#BC5090] mb-6">掌控情绪：与“市场先生”共舞</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">格雷厄姆将市场拟人化为“市场先生”，一个情绪化的商业伙伴。他的每日报价反映的是他的情绪，而非企业的真实价值。你的目标是利用他，而不是被他引导。</p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-red-50 p-6 rounded-lg border border-red-200">
+                    <h4 class="text-xl font-bold text-red-600 mb-3 text-center">错误的做法：被情绪驱动</h4>
+                    <div class="space-y-3 text-center">
+                        <p class="p-2 bg-white rounded shadow">市场先生狂热乐观</p>
+                        <p class="text-2xl font-bold">▼</p>
+                        <p class="p-2 bg-white rounded shadow">你感到贪婪，追高买入</p>
+                        <p class="text-2xl font-bold">▼</p>
+                        <p class="p-2 bg-white rounded shadow">市场先生悲观绝望</p>
+                        <p class="text-2xl font-bold">▼</p>
+                        <p class="p-2 bg-white rounded shadow">你感到恐惧，割肉卖出</p>
+                    </div>
+                </div>
+                <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                    <h4 class="text-xl font-bold text-green-600 mb-3 text-center">正确的做法：利用情绪</h4>
+                    <div class="space-y-3 text-center">
+                        <p class="p-2 bg-white rounded shadow">市场先生狂热乐观</p>
+                        <p class="text-2xl font-bold">▼</p>
+                        <p class="p-2 bg-white rounded shadow">考虑卖出，或直接忽略</p>
+                        <p class="text-2xl font-bold">▼</p>
+                        <p class="p-2 bg-white rounded shadow">市场先生悲观绝望</p>
+                        <p class="text-2xl font-bold">▼</p>
+                        <p class="p-2 bg-white rounded shadow">寻找具有安全边际的买入机会</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="defensive" class="mb-12">
+        <h2 class="text-3xl font-bold text-center text-[#EF5675] mb-6">防御型投资者的行动手册</h2>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">对于不愿或不能投入大量时间进行研究的投资者，核心是追求简单、安全和避免犯错。</p>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1 bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-center mb-4">资产配置：25/75法则</h3>
+                <p class="text-gray-600 text-sm mb-4 text-center">股票仓位永远不应低于25%，也不应高于75%。默认配置为50/50，并定期再平衡。</p>
+                <div class="chart-container h-64 md:h-auto">
+                    <canvas id="assetAllocationChart"></canvas>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 lg:col-span-2 bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-center mb-4">防御型选股的7项标准</h3>
+                <p class="text-gray-600 text-sm mb-4 text-center">对于希望自己挑选股票的防御型投资者，格雷厄姆提出了严格的量化标准。</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div class="p-3 bg-gray-50 rounded-md"><strong>1. 企业规模：</strong>足够大以抵御冲击。</div>
+                    <div class="p-3 bg-gray-50 rounded-md"><strong>2. 财务状况：</strong>流动比率 > 2, 债务有限。</div>
+                    <div class="p-3 bg-gray-50 rounded-md"><strong>3. 利润稳定：</strong>过去10年每年都盈利。</div>
+                    <div class="p-3 bg-gray-50 rounded-md"><strong>4. 股息记录：</strong>连续支付股息至少20年。</div>
+                    <div class="p-3 bg-gray-50 rounded-md"><strong>5. 利润增长：</strong>10年内每股收益增长至少1/3。</div>
+                    <div class="p-3 bg-gray-50 rounded-md"><strong>6. 适度市盈率 (P/E)：</strong>低于15倍。</div>
+                    <div class="p-3 bg-gray-50 rounded-md"><strong>7. 适度市净率 (P/B)：</strong>低于1.5倍 (P/E × P/B < 22.5)。</div>
+                </div>
+                <p class="text-center text-blue-600 font-semibold mt-6">现代替代方案：对于大多数人，定期投资于<span class="font-bold text-xl">低成本指数基金</span>是最佳选择。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="enterprising" class="mb-12">
+        <h2 class="text-3xl font-bold text-center text-[#FF764A] mb-6">积极型投资者的工具箱</h2>
+        <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">对于愿意投入更多时间和精力来寻找卓越回报的投资者，可以采用更主动的策略。</p>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold text-center mb-4">策略一：投资不受欢迎的大公司</h3>
+                <p class="text-gray-600 text-sm mb-4">系统性地购买那些暂时被市场冷落、市盈率（P/E）较低的大型公司。历史数据表明，这种逆向策略长期可能跑赢市场。</p>
+                <div class="chart-container">
+                    <canvas id="unpopularStocksChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 flex flex-col justify-center">
+                <h3 class="text-xl font-bold text-center mb-4">策略二：寻找“烟蒂股” (Net-Nets)</h3>
+                <p class="text-gray-600 text-sm mb-4">这是格雷厄姆的经典策略：寻找交易价格低于其净流动资产价值的公司。这相当于免费获得了公司的固定资产和未来盈利能力。</p>
+                <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center">
+                    <p class="font-mono text-lg font-bold">市场价格 < (流动资产 - 总负债)</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">注意：此策略需要极大的耐心和充分的分散投资，因为单个“烟蒂股”仍有风险。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="traps" class="mb-12">
+        <div class="bg-white rounded-lg shadow-xl p-6 md:p-8 border-t-4 border-[#FFA600]">
+            <h2 class="text-3xl font-bold text-center text-[#FFA600] mb-6">必须规避的投资陷阱</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <div class="text-4xl mb-2"> IPO </div>
+                    <h4 class="font-bold mb-1">首次公开募股</h4>
+                    <p class="text-sm text-red-700">通常在市场高点出售给公众，长期回报记录不佳。</p>
+                </div>
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <div class="text-4xl mb-2">🚀</div>
+                    <h4 class="font-bold mb-1">“成长股”陷阱</h4>
+                    <p class="text-sm text-red-700">为未来的高增长支付过高价格，任何失望都可能导致股价暴跌。</p>
+                </div>
+                <div class="p-4 bg-red-50 rounded-lg">
+                    <div class="text-4xl mb-2">⏱️</div>
+                    <h4 class="font-bold mb-1">市场择时</h4>
+                    <p class="text-sm text-red-700">试图预测市场短期走势是投机行为，成功率极低。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+
+<script>
+    const brilliantBlues = ['#64748b', '#94a3b8', '#475569', '#6b7280', '#4b5563', '#374151', '#1f2937'];
+
+    const wrapLabel = (label) => {
+        if (typeof label === 'string' && label.length > 16) {
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length > 16) {
+                    lines.push(currentLine.trim());
+                    currentLine = '';
+                }
+                currentLine += word + ' ';
+            }
+            lines.push(currentLine.trim());
+            return lines;
+        }
+        return label;
+    };
+
+    const tooltipTitleCallback = (tooltipItems) => {
+        const item = tooltipItems[0];
+        let label = item.chart.data.labels[item.dataIndex];
+        if (Array.isArray(label)) {
+            return label.join(' ');
+        }
+        return label;
+    };
+
+    const commonChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    font: {
+                        family: "'Inter', 'Noto Sans SC', sans-serif"
+                    }
+                }
+            },
+            tooltip: {
+                callbacks: {
+                    title: tooltipTitleCallback
+                }
+            }
+        }
+    };
+
+    const assetCtx = document.getElementById('assetAllocationChart').getContext('2d');
+    new Chart(assetCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['高等级普通股', '高等级债券'],
+            datasets: [{
+                label: '资产配置',
+                data: [50, 50],
+                backgroundColor: [brilliantBlues[0], brilliantBlues[4]],
+                borderColor: '#ffffff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            ...commonChartOptions,
+            plugins: {
+                ...commonChartOptions.plugins,
+                title: {
+                    display: true,
+                    text: '默认 50/50 资产配置'
+                }
+            }
+        }
+    });
+
+    const unpopularCtx = document.getElementById('unpopularStocksChart').getContext('2d');
+    const unpopularLabels = ['第1-5年', '第6-10年', '第11-15年', '第16-20年'];
+    new Chart(unpopularCtx, {
+        type: 'bar',
+        data: {
+            labels: unpopularLabels.map(wrapLabel),
+            datasets: [
+                {
+                    label: '不受欢迎的股票组合 (假设年化回报)',
+                    data: [14, 15, 13, 16],
+                    backgroundColor: brilliantBlues[1],
+                    borderColor: brilliantBlues[1],
+                    borderWidth: 1
+                },
+                {
+                    label: '市场平均水平 (假设年化回报)',
+                    data: [10, 9, 11, 10],
+                    backgroundColor: brilliantBlues[2],
+                    borderColor: brilliantBlues[2],
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            ...commonChartOptions,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '年化回报率 (%)'
+                    }
+                }
+            },
+            plugins: {
+                ...commonChartOptions.plugins,
+                title: {
+                    display: true,
+                    text: '逆向投资策略的长期表现（示意图）'
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

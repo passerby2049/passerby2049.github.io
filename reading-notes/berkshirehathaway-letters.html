@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>巴菲特之道：可执行的投资框架报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+        }
+        .principle-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-left: 5px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex;
+            flex-direction: column;
+        }
+        .principle-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .principle-card p { flex-grow: 1; }
+        .checklist-item {
+            background-color: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .back-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .back-home:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<a href="./" class="back-home">← 返回读书笔记</a>
+
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-6 py-4">
+        <h1 class="text-2xl md:text-3xl font-bold text-center gradient-text">《巴菲特致股东的信》读书笔记</h1>
+        <p class="text-center text-gray-500 mt-1">一份源自巴菲特智慧的可执行投资框架</p>
+    </div>
+</header>
+
+<div class="container mx-auto p-4 md:p-8">
+
+    <main class="space-y-16">
+
+        <section id="introduction" class="mb-12">
+            <div class="text-center p-8 bg-white rounded-lg shadow-xl border-t-4 border-[#64748b]">
+                <h2 class="text-3xl font-bold text-[#475569] mb-4">巴菲特之道：可执行的投资框架</h2>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    在任何分析开始之前，必须建立正确的思维框架。本笔记将巴菲特的投资智慧转化为系统性的实践指南，帮助投资者构建属于自己的投资体系。
+                </p>
+            </div>
+        </section>
+
+        <section id="mindset">
+            <h2 class="text-3xl font-bold text-[#003f5c] mb-6 text-center">第一部分：基础心态 - 像企业主一样思考</h2>
+            <p class="text-gray-600 mb-10 max-w-3xl mx-auto text-center">
+                在任何分析开始之前，必须建立正确的思维框架。巴菲特认为，投资者的心态是其最宝贵的资产，它决定了在面对市场波动和不确定性时能否做出理性的决策。以下是构成其投资哲学的四大基石。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="principle-card">
+                    <h3 class="text-xl font-bold text-[#003f5c] mb-2">1. 能力圈原则</h3>
+                    <p class="text-gray-600 mb-3">“重要的不是圈子有多大，而是清楚自己的边界所在。”投资者必须诚实地评估自己的知识，只在自己能深刻理解的领域内投资。这是风险控制的第一道，也是最重要的一道防线。</p>
+                    <p class="text-sm font-semibold text-[#665191]">行动指南：列出你真正懂的行业，并坚守于此。</p>
+                </div>
+                <div class="principle-card">
+                    <h3 class="text-xl font-bold text-[#003f5c] mb-2">2. “市场先生”寓言</h3>
+                    <p class="text-gray-600 mb-3">将市场看作一个情绪化的商业伙伴。他的报价时而亢奋，时而沮丧。你的任务是利用他的情绪，而不是被他感染。市场波动是你的朋友，而非敌人。</p>
+                    <p class="text-sm font-semibold text-[#665191]">行动指南：在市场恐慌时寻找机会，在市场狂热时保持冷静。</p>
+                </div>
+                <div class="principle-card">
+                    <h3 class="text-xl font-bold text-[#003f5c] mb-2">3. 内在价值与安全边际</h3>
+                    <p class="text-gray-600 mb-3">内在价值是企业未来现金流的折现值。安全边际是指以显著低于内在价值的价格买入。这是投资成功的基石，为可能犯的错误和未来的不确定性提供缓冲。</p>
+                    <p class="text-sm font-semibold text-[#665191]">行动指南：永远坚持“用四毛钱买一块钱的东西”。</p>
+                </div>
+                <div class="principle-card">
+                    <h3 class="text-xl font-bold text-[#003f5c] mb-2">4. 所有权原则</h3>
+                    <p class="text-gray-600 mb-3">买股票就是买公司的一部分。你的关注点应该是企业的长期经营表现，而不是股票代码的每日跳动。像收购整家公司一样去研究它。</p>
+                    <p class="text-sm font-semibold text-[#665191]">行动指南：问自己：“如果这是我家唯一的资产，我愿意拥有它吗？”</p>
+                </div>
+            </div>
+            <div class="mt-8 bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded-r-lg">
+                <h4 class="font-bold">核心洞察：四大原则的逻辑链条</h4>
+                <p class="text-sm mt-2">这四大原则环环相扣：你必须在<strong class="font-semibold">能力圈</strong>内，才能估算出可靠的<strong class="font-semibold">内在价值</strong>；有了内在价值，才能判断是否存在<strong class="font-semibold">安全边际</strong>；最终，你需要<strong class="font-semibold">所有权心态</strong>和对<strong class="font-semibold">市场先生</strong>的理解，才能在安全边际出现时果断行动。</p>
+            </div>
+        </section>
+
+        <section id="quality">
+            <h2 class="text-3xl font-bold text-[#003f5c] mb-6 text-center">第二部分：识别卓越企业 - 定性分析框架</h2>
+            <p class="text-gray-600 mb-10 max-w-3xl mx-auto text-center">
+                “以合理的价格买入一家优秀的公司，远胜于以便宜的价格买入一家平庸的公司。”本部分将探讨如何识别那些具备持久竞争优势和卓越管理层的企业。
+            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-[#2f4b7c] mb-4 text-center">持久的经济护城河</h3>
+                    <p class="text-sm text-gray-600 mb-4">经济护城河是保护企业免受竞争侵蚀的结构性优势。投资者分析的关键在于判断护城河的“持久性”——它是在不断加宽还是在逐渐收窄。</p>
+                    <div class="chart-container">
+                        <canvas id="moatChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-[#2f4b7c] mb-4 text-center">规避“烟蒂股”陷阱</h3>
+                    <p class="text-sm text-gray-600 mb-4">巴菲特早年曾投资于业务平庸但价格便宜的“烟蒂股”。他很快认识到这是个错误，因为“时间是优秀企业的朋友，是平庸企业的敌人”。平庸公司的低回报率会不断侵蚀价值。</p>
+                    <div class="chart-container h-[280px] max-h-[300px]">
+                        <canvas id="cigarButtChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="valuation">
+            <h2 class="text-3xl font-bold text-[#003f5c] mb-6 text-center">第三部分：估值工具箱 - 穿透会计的迷雾</h2>
+            <p class="text-gray-600 mb-10 max-w-3xl mx-auto text-center">
+                会计是商业的语言，但它可能被用来掩盖而非揭示经济现实。巴菲特发展了一套自己的财务指标，以更准确地衡量企业的真实盈利能力。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-[#2f4b7c] mb-4 text-center">股东盈余：真实的盈利能力</h3>
+                    <p class="text-sm text-gray-600 mb-4">巴菲特认为华尔街的“现金流”指标有严重谬误，因为它忽略了维持企业运营必需的资本开支。他提出“股东盈余”作为更真实的衡量标准。</p>
+                    <div class="bg-gray-50 p-3 rounded-lg text-center">
+                        <p class="text-sm text-gray-800"><strong>股东盈余 = 净利润 + 折旧摊销 - 维持性资本支出</strong></p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-[#2f4b7c] mb-4 text-center">透视盈余：控股公司的现实</h3>
+                    <p class="text-sm text-gray-600 mb-4">对于伯克希尔这样的控股公司，GAAP规则会忽略其投资公司留存的巨额利润。巴菲特用“透视盈余”来反映这一经济现实。</p>
+                    <div class="chart-container h-[200px] max-h-[220px]">
+                        <canvas id="lookThroughChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 md:col-span-2">
+                    <h3 class="text-xl font-bold text-[#2f4b7c] mb-4 text-center">盈利能力指标对比</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">指标</th>
+                                <th scope="col" class="px-6 py-3">巴菲特的原理与批判</th>
+                                <th scope="col" class="px-6 py-3">对投资者的启示</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="bg-white border-b">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">GAAP净利润</th>
+                                <td class="px-6 py-4">极易受非现金费用和管理层操纵的扭曲。它只是起点，而非终点。</td>
+                                <td class="px-6 py-4">可能具有高度误导性；必须对其进行解构分析。</td>
+                            </tr>
+                            <tr class="bg-white border-b">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">“现金流”</th>
+                                <td class="px-6 py-4">这是一个“谬论”。它忽略了维持性资本支出，从而危险地夸大了真实盈利能力。</td>
+                                <td class="px-6 py-4">常被用来为高价收购辩护。应以极度怀疑的态度看待。</td>
+                            </tr>
+                            <tr class="bg-white">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">股东盈余</th>
+                                <td class="px-6 py-4">在维持了企业生产能力后，真正可供所有者支配的现金。反映了经济现实。</td>
+                                <td class="px-6 py-4">用于估值和评估管理层资本配置选择的最相关数据。</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="strategy">
+            <h2 class="text-3xl font-bold text-[#003f5c] mb-6 text-center">第四部分：投资组合策略与长期运营</h2>
+            <p class="text-gray-600 mb-10 max-w-3xl mx-auto text-center">
+                如何构建和管理投资组合是投资理念的最终体现。巴菲特提倡与传统智慧截然相反的策略：集中投资、极度耐心，并对风险有根本不同的理解。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-[#2f4b7c] mb-4 text-center">投资组合：集中 vs 多元化</h3>
+                    <p class="text-sm text-gray-600 mb-4">巴菲特认为，对于知识渊博的投资者，“多元化”可能导致“多元恶化”。将资本集中于少数几家经过深入研究的卓越公司，实际上是降低了永久性资本损失的风险。</p>
+                    <div class="chart-container">
+                        <canvas id="portfolioChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <h3 class="text-xl font-bold text-[#2f4b7c] mb-4 text-center">“无为”的力量：最小化摩擦成本</h3>
+                    <p class="text-sm text-gray-600 mb-4">“如果你不打算持有一只股票10年，那就不必考虑甚至持有10分钟。”过度交易是投资者的天敌，佣金和税收等摩擦成本会严重侵蚀长期回报。</p>
+                    <div class="chart-container h-[280px] max-h-[300px]">
+                        <canvas id="inactivityChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg p-6 md:col-span-2">
+                    <h3 class="text-xl font-bold text-[#2f4b7c] mb-4 text-center">对现代金融理论的批判：风险到底是什么？</h3>
+                    <p class="text-sm text-gray-600 mb-4 max-w-2xl mx-auto text-center">
+                        巴菲特彻底颠覆了现代金融理论对风险的定义。风险不是股价的波动（Beta），而是资本发生永久性损失的可能性。这一根本性的哲学转变，是理解其集中投资和长期持有策略的前提。
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-center">
+                        <div class="p-6 bg-red-50 rounded-lg border border-red-200">
+                            <h4 class="font-bold text-red-800 text-lg">学术界的风险观</h4>
+                            <p class="text-2xl font-mono my-4 text-red-600">β (Beta)</p>
+                            <p class="text-sm text-red-700 mt-2">将历史价格波动性等同于风险。价格下跌 = 风险增加。</p>
+                        </div>
+                        <div class="p-6 bg-green-50 rounded-lg border border-green-200">
+                            <h4 class="font-bold text-green-800 text-lg">巴菲特的风险观</h4>
+                            <p class="text-2xl font-mono my-4 text-green-600">永久性资本损失</p>
+                            <p class="text-sm text-green-700 mt-2">风险来自业务基本面恶化或买价过高。价格下跌 = 机会增加。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="framework">
+            <h2 class="text-3xl font-bold text-[#003f5c] mb-6 text-center">第五部分：智慧投资者的可执行框架</h2>
+            <p class="text-gray-600 mb-10 max-w-3xl mx-auto text-center">
+                将所有原则融合成一个实用的决策流程。这个清单是投资者在做出任何投资决策前，都应逐项核对的纪律工具，它能帮助你系统性地应用巴菲特的智慧，避免情绪化错误。
+            </p>
+            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+                <h3 class="text-2xl font-bold text-[#003f5c] mb-6 text-center">终极投资检查清单</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div class="checklist-item">
+                        <h4 class="font-bold text-lg mb-2 text-[#665191]">✅ 能力圈评估</h4>
+                        <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
+                            <li>我能否向一个10岁孩子解释清楚这门生意？</li>
+                            <li>行业未来5-10年的前景是否清晰可预测？</li>
+                        </ul>
+                    </div>
+                    <div class="checklist-item">
+                        <h4 class="font-bold text-lg mb-2 text-[#a05195]">✅ 企业质量评估</h4>
+                        <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
+                            <li>护城河是什么？是在加宽还是变窄？</li>
+                            <li>是否是资本密集型业务？长期ROE如何？</li>
+                        </ul>
+                    </div>
+                    <div class="checklist-item">
+                        <h4 class="font-bold text-lg mb-2 text-[#d45087]">✅ 管理层质量评估</h4>
+                        <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
+                            <li>管理层是否理性、诚实？资本配置记录如何？</li>
+                            <li>薪酬方案是否与股东利益真正挂钩？</li>
+                        </ul>
+                    </div>
+                    <div class="checklist-item">
+                        <h4 class="font-bold text-lg mb-2 text-[#f95d6a]">✅ 财务与估值评估</h4>
+                        <ul class="list-disc list-inside text-sm space-y-1 text-gray-700">
+                            <li>“股东盈余”是否健康？债务水平是否低？</li>
+                            <li>当前价格是否提供了巨大的“安全边际”？</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const brilliantBlues = ['#003f5c', '#665191', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'];
+        const brilliantBluesBg = ['rgba(0, 63, 92, 0.7)', 'rgba(102, 81, 145, 0.7)', 'rgba(212, 80, 135, 0.7)', 'rgba(249, 93, 106, 0.7)', 'rgba(255, 124, 67, 0.7)', 'rgba(255, 166, 0, 0.7)'];
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) { return label.join(' '); }
+            return label;
+        };
+
+        const defaultChartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { font: { family: "'Noto Sans SC', sans-serif" } } },
+                tooltip: { callbacks: { title: tooltipTitleCallback }, titleFont: { family: "'Noto Sans SC', sans-serif" }, bodyFont: { family: "'Noto Sans SC', sans-serif" } }
+            },
+            scales: { x: { ticks: { font: { family: "'Noto Sans SC', sans-serif" } } }, y: { ticks: { font: { family: "'Noto Sans SC', sans-serif" } } } }
+        };
+
+        const createMoatChart = () => {
+            const ctx = document.getElementById('moatChart')?.getContext('2d');
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['强大的品牌', '低成本优势', '网络效应', '政府特许权', '高转换成本'],
+                    datasets: [{ label: '护城河强度', data: [90, 85, 75, 60, 70], backgroundColor: brilliantBluesBg, borderColor: brilliantBlues, borderWidth: 1 }]
+                },
+                options: { ...defaultChartOptions, indexAxis: 'y', plugins: { ...defaultChartOptions.plugins, legend: { display: false } } }
+            });
+        };
+
+        const createCigarButtChart = () => {
+            const ctx = document.getElementById('cigarButtChart')?.getContext('2d');
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['第1年', '第5年', '第10年', '第20年'],
+                    datasets: [
+                        { label: '卓越企业价值', data: [100, 180, 324, 1050], borderColor: '#003f5c', tension: 0.1, fill: true, backgroundColor: 'rgba(0, 63, 92, 0.2)'},
+                        { label: '“烟蒂股”价值', data: [70, 75, 65, 50], borderColor: '#f95d6a', tension: 0.1, fill: false }
+                    ]
+                },
+                options: { ...defaultChartOptions, scales: { y: { title: { display: true, text: '企业内在价值' } } } }
+            });
+        };
+
+        const createLookThroughChart = () => {
+            const ctx = document.getElementById('lookThroughChart')?.getContext('2d');
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['伯克希尔'],
+                    datasets: [
+                        { label: '报告运营利润', data: [100], backgroundColor: brilliantBluesBg[5] },
+                        { label: '应占未分配利润', data: [50], backgroundColor: brilliantBluesBg[1] }
+                    ]
+                },
+                options: { ...defaultChartOptions, indexAxis: 'y', scales: { x: { stacked: true, title: { display: true, text: '透视盈余 (百万美元)'} }, y: { stacked: true } }, plugins: { ...defaultChartOptions.plugins, legend: { position: 'top' } } }
+            });
+        };
+
+        const createPortfolioChart = () => {
+            const ctx = document.getElementById('portfolioChart')?.getContext('2d');
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['集中投资 (巴菲特)', '广泛多元化 (传统)'],
+                    datasets: [{ label: '投资组合策略', data: [5, 50], backgroundColor: ['#665191', '#ffa600'], hoverOffset: 4 }]
+                },
+                options: { ...defaultChartOptions, plugins: { ...defaultChartOptions.plugins, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.parsed} 只持股` } } } }
+            });
+        };
+
+        const createInactivityChart = () => {
+            const ctx = document.getElementById('inactivityChart')?.getContext('2d');
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['第1年', '第5年', '第10年', '第20年', '第30年'],
+                    datasets: [
+                        { label: '耐心持有 (无为)', data: [100, 161, 259, 672, 1745], borderColor: '#003f5c', tension: 0.1, fill: false },
+                        { label: '频繁交易 (摩擦成本)', data: [100, 148, 200, 350, 661], borderColor: '#f95d6a', tension: 0.1, fill: false }
+                    ]
+                },
+                options: { ...defaultChartOptions, scales: { y: { title: { display: true, text: '投资组合价值 (千美元)' } } } }
+            });
+        };
+
+        createMoatChart();
+        createCigarButtChart();
+        createLookThroughChart();
+        createPortfolioChart();
+        createInactivityChart();
+    });
+</script>
+</body>
+</html>

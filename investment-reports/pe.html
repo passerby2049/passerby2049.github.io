@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>市盈率 (PE) 互动探索指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals with Teal Accent -->
+    <!-- Application Structure Plan: A thematic, single-page dashboard design. The structure progresses from foundational concepts to practical application tools, comparative analysis, and advanced insights. It starts with a simple calculator ("P/E Compass"), moves to explaining different P/E types ("P/E Family"), discusses interpretation ("Art of Interpretation"), provides crucial context via an interactive chart ("Context is King"), introduces an advanced metric with a calculator ("The Growth Adjuster"), and concludes with side-by-side case studies ("Analyst's Toolkit"). This task-oriented flow allows users to learn and apply concepts interactively, which is more engaging and effective for retention than a linear report. A sticky navigation bar enables quick access to any section, supporting both linear learning and ad-hoc tool usage. -->
+    <!-- Visualization & Content Choices:
+        1.  P/E Calculator: Report Info -> P/E Formula. Goal -> Inform/Engage. Viz -> Interactive input fields. Interaction -> Real-time calculation. Justification -> Makes the abstract formula tangible. Library -> Vanilla JS.
+        2.  P/E Family Selector: Report Info -> Trailing vs. Forward P/E. Goal -> Compare. Viz -> Text blocks updated by buttons. Interaction -> User selects a company profile to see how growth expectations change P/E values. Justification -> Clearly demonstrates the concept of "P/E spread" and market expectations. Library -> Vanilla JS.
+        3.  Industry Comparison Chart: Report Info -> Industry average P/E table. Goal -> Compare. Viz -> Bar Chart. Interaction -> Hover/click on bars to see details. Justification -> A bar chart is far more effective than a table for visualizing relative valuation differences across sectors. Library -> Chart.js (Canvas).
+        4.  PEG Calculator: Report Info -> PEG formula and interpretation. Goal -> Analyze. Viz -> Interactive input fields with color-coded results. Interaction -> Real-time calculation and interpretation. Justification -> Provides a practical tool to assess the reasonableness of a P/E ratio. Library -> Vanilla JS.
+        5.  Case Study Comparison: Report Info -> NVIDIA vs. Duke Energy analysis. Goal -> Compare/Synthesize. Viz -> Side-by-side card layout. Interaction -> Toggle buttons to switch focus. Justification -> Facilitates direct comparison between a high-growth and a value stock profile. Library -> Vanilla JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+                max-height: 500px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .nav-link.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+        }
+        .nav-link:hover {
+            color: #667eea;
+        }
+        .back-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 1rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .back-home:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        .content-section {
+            scroll-margin-top: 80px;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+<header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <a href="./" class="back-home">← 返回投资报告</a>
+                <span class="font-bold text-xl text-slate-700">市盈率 (PE) 指南</span>
+            </div>
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-4">
+                    <a href="#concepts" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">核心概念</a>
+                    <a href="#types" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">PE大家族</a>
+                    <a href="#interpretation" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">解读艺术</a>
+                    <a href="#context" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">行业对比</a>
+                    <a href="#peg" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">PEG工具</a>
+                    <a href="#cases" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">案例分析</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <section id="hero" class="text-center mb-20">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-4">全面解析市盈率 (P/E Ratio)</h1>
+        <p class="text-lg text-slate-600 max-w-3xl mx-auto mb-8">从核心概念到专家级应用，一个互动式的学习与探索指南。</p>
+        <div class="flex justify-center">
+            <a href="../assets/深入浅出理解市盈率 (PE).pdf" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all">
+                📄 下载完整PDF报告
+            </a>
+        </div>
+    </section>
+
+    <section id="concepts" class="content-section mb-20">
+        <h2 class="text-3xl font-bold text-slate-900 mb-2 text-center">您的投资指南针：核心概念</h2>
+        <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">市盈率的核心问题是：“我为公司的每1元盈利付出了多少钱？” 它衡量的是价格与价值的关系，也是一个直观的投资回收期指标。</p>
+        <div class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold mb-4 text-slate-700">市盈率互动计算器</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="price" class="block text-sm font-medium text-slate-700">每股市价 (P)</label>
+                        <input type="number" id="price" value="100" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-slate-500 focus:border-slate-500">
+                    </div>
+                    <div>
+                        <label for="eps" class="block text-sm font-medium text-slate-700">每股收益 (E)</label>
+                        <input type="number" id="eps" value="10" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-slate-500 focus:border-slate-500">
+                    </div>
+                    <div class="pt-4 text-center">
+                        <p class="text-slate-600">计算出的市盈率 (P/E) 为:</p>
+                        <p id="pe-result" class="text-4xl font-bold text-slate-600">10.0 倍</p>
+                        <p id="payback-period" class="text-sm text-slate-500 mt-1">(在利润不变的理想情况下，约等于10.0年投资回收期)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-slate-700 space-y-4">
+                <h3 class="text-2xl font-bold mb-2">街角商店的比喻</h3>
+                <p>想象一下，您想收购一家街角的便利店。这家店每年净赚10万元，店主开价100万元。您支付的价格（100万）是它年利润（10万）的10倍。这个“10倍”就是它的“市盈率”。</p>
+                <p>在股市中，购买股票就是购买公司的一部分。市盈率告诉我们，为了获得公司的一部分盈利能力，我们付出了多大的代价。它本质上衡量的是<strong class="text-slate-600">“未来预期”</strong>与<strong class="text-slate-600">“当前现实”</strong>之间的差距。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="types" class="content-section mb-20">
+        <h2 class="text-3xl font-bold text-slate-900 mb-2 text-center">市盈率大家族</h2>
+        <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">市盈率并非单一指标。根据计算“盈利”的时间维度不同，它有多个版本，各自揭示了不同的信息。</p>
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="border-r border-slate-200 pr-8">
+                    <h4 class="font-bold text-lg mb-2 text-slate-700">静态市盈率 (Trailing P/E)</h4>
+                    <p class="text-sm text-slate-600">基于<strong class="font-semibold">过去12个月</strong>的实际盈利计算。数据客观可靠，但无法反映未来增长。</p>
+                </div>
+                <div class="border-r border-slate-200 pr-8">
+                    <h4 class="font-bold text-lg mb-2 text-slate-700">动态市盈率 (Forward P/E)</h4>
+                    <p class="text-sm text-slate-600">基于分析师对<strong class="font-semibold">未来12个月</strong>的盈利预测计算。更具前瞻性，但依赖于可能不准确的预测。</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg mb-2 text-slate-700">席勒市盈率 (Shiller P/E)</h4>
+                    <p class="text-sm text-slate-600">基于<strong class="font-semibold">过去10年</strong>经通胀调整的平均盈利。用于宏观市场判断，平滑短期波动。</p>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-slate-200">
+                <h4 class="font-bold text-lg text-center mb-4">“市盈率价差”的信号</h4>
+                <p class="text-center text-sm text-slate-600 mb-6">比较静态与动态市盈率，可以快速量化市场对公司未来增长的预期。</p>
+                <div class="flex justify-center space-x-4 mb-6">
+                    <button id="btn-growth" class="pe-type-btn bg-slate-600 text-white px-4 py-2 rounded-lg shadow">高增长科技公司</button>
+                    <button id="btn-stable" class="pe-type-btn bg-white text-slate-700 px-4 py-2 rounded-lg shadow border">稳定公用事业</button>
+                </div>
+                <div id="pe-spread-display" class="text-center">
+                    <!-- Content updated by JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="interpretation" class="content-section mb-20">
+        <h2 class="text-3xl font-bold text-slate-900 mb-2 text-center">解读的艺术</h2>
+        <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">一个数字本身没有意义。高市盈率可能是增长的故事，也可能是炒作的泡沫；低市盈率可能是价值的机遇，也可能是隐藏的陷阱。</p>
+        <div class="grid md:grid-cols-2 gap-10">
+            <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-amber-400">
+                <h3 class="text-2xl font-bold mb-4">高市盈率 🤔</h3>
+                <p class="mb-4 text-slate-600">市场愿意为公司未来的高增长支付溢价。</p>
+                <div class="space-y-3">
+                    <div class="flex items-start">
+                        <span class="text-green-500 mr-3 mt-1">✓</span>
+                        <p><strong class="font-semibold">增长的故事:</strong> 公司处于高成长赛道，拥有强大护城河，或因暂时性投入导致利润偏低。</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-red-500 mr-3 mt-1">✗</span>
+                        <p><strong class="font-semibold">炒作的低语:</strong> 市场可能存在泡沫，投资者预期过高，一旦业绩不及预期，风险巨大。</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg border-t-4 border-sky-400">
+                <h3 class="text-2xl font-bold mb-4">低市盈率 🙂</h3>
+                <p class="mb-4 text-slate-600">市场对公司未来增长预期不高，价格相对便宜。</p>
+                <div class="space-y-3">
+                    <div class="flex items-start">
+                        <span class="text-green-500 mr-3 mt-1">✓</span>
+                        <p><strong class="font-semibold">价值的机遇:</strong> 公司可能被市场错杀，或处于成熟稳定行业，现金流充裕。</p>
+                    </div>
+                    <div class="flex items-start">
+                        <span class="text-red-500 mr-3 mt-1">✗</span>
+                        <p><strong class="font-semibold">价值陷阱:</strong> 市场可能已预见到公司盈利将衰退，或基本面正在恶化。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-8 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert">
+            <p class="font-bold">红色警报：负市盈率</p>
+            <p>当公司亏损时，市盈率失效。此时必须转换分析框架，使用市销率 (P/S) 或市净率 (P/B) 等其他估值工具。</p>
+        </div>
+    </section>
+
+    <section id="context" class="content-section mb-20">
+        <h2 class="text-3xl font-bold text-slate-900 mb-2 text-center">情境为王：行业对比</h2>
+        <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">脱离情境的市盈率毫无意义。将一家科技公司与银行直接比较，就像拿苹果和橙子比较。最核心的比较，是与行业内的同行进行比较。</p>
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+            <h3 class="text-xl font-bold text-center mb-2">部分行业平均市盈率对比</h3>
+            <p id="industry-info" class="text-center text-sm text-slate-500 mb-6 h-5">将鼠标悬停在图表条目上查看详情</p>
+            <div class="chart-container">
+                <canvas id="industryPeChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section id="peg" class="content-section mb-20">
+        <h2 class="text-3xl font-bold text-slate-900 mb-2 text-center">增长调节器：PEG 指标</h2>
+        <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">市盈率最大的盲点是忽略了“盈利增长速度”。PEG指标通过引入增长率，为高市盈率股票提供了一个“合理性检验工具”。</p>
+        <div class="grid md:grid-cols-2 gap-10 items-center">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold mb-4 text-slate-700">PEG 互动计算器</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="peg-pe" class="block text-sm font-medium text-slate-700">市盈率 (P/E)</label>
+                        <input type="number" id="peg-pe" value="30" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-slate-500 focus:border-slate-500">
+                    </div>
+                    <div>
+                        <label for="peg-growth" class="block text-sm font-medium text-slate-700">盈利年增长率 (%)</label>
+                        <input type="number" id="peg-growth" value="25" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-slate-500 focus:border-slate-500">
+                    </div>
+                    <div class="pt-4 text-center">
+                        <p class="text-slate-600">计算出的PEG比率为:</p>
+                        <p id="peg-result" class="text-4xl font-bold">1.2</p>
+                        <p id="peg-interpretation" class="text-sm font-medium mt-1">估值可能略高</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-slate-700 space-y-4">
+                <h3 class="text-2xl font-bold mb-2">彼得·林奇的经验法则</h3>
+                <p>传奇投资大师彼得·林奇推广了PEG，并提供了一个简单的解读框架：</p>
+                <ul class="space-y-2">
+                    <li class="flex items-center"><span class="w-4 h-4 rounded-full bg-green-500 mr-3"></span><strong>PEG &lt; 1.0:</strong> 股票可能被低估，是投资的“甜蜜点”。</li>
+                    <li class="flex items-center"><span class="w-4 h-4 rounded-full bg-yellow-400 mr-3"></span><strong>PEG ≈ 1.0:</strong> 估值合理，与增长前景匹配。</li>
+                    <li class="flex items-center"><span class="w-4 h-4 rounded-full bg-red-500 mr-3"></span><strong>PEG > 1.0:</strong> 股票可能被高估，价格已过度反映未来。</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section id="cases" class="content-section mb-20">
+        <h2 class="text-3xl font-bold text-slate-900 mb-2 text-center">分析师工具箱：案例与清单</h2>
+        <p class="text-center text-slate-600 mb-12 max-w-3xl mx-auto">理论结合实践。通过对比“短跑选手”和“长跑选手”的案例，理解不同类型公司的估值逻辑，并用最终的检查清单来武装自己。</p>
+        <div class="grid md:grid-cols-2 gap-10">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h3 class="text-2xl font-bold mb-4">案例研究：短跑选手 vs 长跑选手</h3>
+                <div class="flex items-center justify-between p-4 bg-stone-100 rounded-lg">
+                    <div>
+                        <p class="font-bold text-lg text-amber-600">英伟达 (NVDA)</p>
+                        <p class="text-sm text-slate-500">高增长巨头</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-lg">PE: ~57x</p>
+                        <p class="text-sm text-slate-500">行业: 半导体</p>
+                    </div>
+                </div>
+                <p class="text-sm mt-4 text-slate-600">对于英伟达这类公司，关键在于其盈利增长速度能否持续超过惊人的股价上涨速度。核心风险是“市盈率压缩”：一旦增长放缓，市场将不再愿意支付高估值，即使盈利仍在增长，股价也可能下跌。</p>
+                <hr class="my-6">
+                <div class="flex items-center justify-between p-4 bg-stone-100 rounded-lg">
+                    <div>
+                        <p class="font-bold text-lg text-sky-600">杜克能源 (DUK)</p>
+                        <p class="text-sm text-slate-500">稳定公用事业</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-lg">PE: ~20x</p>
+                        <p class="text-sm text-slate-500">行业: 公用事业</p>
+                    </div>
+                </div>
+                <p class="text-sm mt-4 text-slate-600">对于杜克能源这类公司，其估值逻辑与宏观利率环境紧密相关。投资者会将其“盈利收益率”(E/P)与无风险的国债收益率比较。利率上升会降低这类稳定派息股票的吸引力，从而对估值构成压力。</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h3 class="text-2xl font-bold mb-4">智慧投资者的检查清单</h3>
+                <ul class="space-y-4 text-slate-700">
+                    <li class="flex"><span class="mr-3 text-slate-600">1.</span><p>我看到的是哪个PE？静态还是动态？“价差”揭示了什么？</p></li>
+                    <li class="flex"><span class="mr-3 text-slate-600">2.</span><p>与行业同行相比如何？估值处于高位、中位还是低位？</p></li>
+                    <li class="flex"><span class="mr-3 text-slate-600">3.</span><p>与自身历史相比如何？当前估值是否处于极端区域？</p></li>
+                    <li class="flex"><span class="mr-3 text-slate-600">4.</span><p>这个数字讲述了什么故事？我是否认同市场对它的预期？</p></li>
+                    <li class="flex"><span class="mr-3 text-slate-600">5.</span><p>对于高PE，PEG是多少？增长能否支撑高估值？</p></li>
+                    <li class="flex"><span class="mr-3 text-slate-600">6.</span><p>PE<strong class="text-red-500">没有</strong>告诉我什么？（如债务、现金流、管理层质量）</p></li>
+                </ul>
+                <div class="mt-6 pt-6 border-t border-slate-200">
+                    <h4 class="font-bold text-lg text-center">结论</h4>
+                    <p class="text-center text-sm mt-2 text-slate-600">市盈率是探索的起点，而非判断的终点。它的真正力量在于，它促使我们去提出更深层次的问题。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-slate-800 text-white mt-20">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-sm">
+        <p>&copy; 2025 市盈率互动探索指南. 仅用于教育和演示目的。</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        function initPeCalculator() {
+            const priceInput = document.getElementById('price');
+            const epsInput = document.getElementById('eps');
+            const resultEl = document.getElementById('pe-result');
+            const paybackEl = document.getElementById('payback-period');
+
+            function calculatePE() {
+                const price = parseFloat(priceInput.value) || 0;
+                const eps = parseFloat(epsInput.value) || 0;
+                if (eps > 0) {
+                    const pe = price / eps;
+                    resultEl.textContent = `${pe.toFixed(1)} 倍`;
+                    paybackEl.textContent = `(在利润不变的理想情况下，约等于${pe.toFixed(1)}年投资回收期)`;
+                } else {
+                    resultEl.textContent = 'N/A';
+                    paybackEl.textContent = '(每股收益必须为正数)';
+                }
+            }
+
+            priceInput.addEventListener('input', calculatePE);
+            epsInput.addEventListener('input', calculatePE);
+            calculatePE();
+        }
+
+        function initPeSpread() {
+            const growthBtn = document.getElementById('btn-growth');
+            const stableBtn = document.getElementById('btn-stable');
+            const displayEl = document.getElementById('pe-spread-display');
+            const buttons = [growthBtn, stableBtn];
+
+            const data = {
+                growth: {
+                    trailing: 30,
+                    forward: 20,
+                    text: '动态PE低于静态PE，强烈暗示市场预期其未来一年盈利将有<strong class="text-green-600">显著增长</strong>。'
+                },
+                stable: {
+                    trailing: 18,
+                    forward: 17.5,
+                    text: '动态PE略低于静态PE，表明市场预期其盈利将<strong class="text-blue-600">稳定且小幅增长</strong>。'
+                }
+            };
+
+            function updateDisplay(type) {
+                const { trailing, forward, text } = data[type];
+                displayEl.innerHTML = `
+                        <div class="flex justify-center items-center gap-8">
+                            <div>
+                                <p class="text-sm text-slate-500">静态市盈率</p>
+                                <p class="text-2xl font-bold">${trailing}x</p>
+                            </div>
+                            <div class="text-2xl font-bold text-slate-600"> > </div>
+                            <div>
+                                <p class="text-sm text-slate-500">动态市盈率</p>
+                                <p class="text-2xl font-bold">${forward}x</p>
+                            </div>
+                        </div>
+                        <p class="mt-4 text-sm max-w-md mx-auto">${text}</p>
+                    `;
+
+                buttons.forEach(btn => {
+                    btn.classList.remove('bg-slate-600', 'text-white');
+                    btn.classList.add('bg-white', 'text-slate-700');
+                });
+                const activeBtn = document.getElementById(`btn-${type}`);
+                activeBtn.classList.add('bg-slate-600', 'text-white');
+                activeBtn.classList.remove('bg-white', 'text-slate-700');
+            }
+
+            growthBtn.addEventListener('click', () => updateDisplay('growth'));
+            stableBtn.addEventListener('click', () => updateDisplay('stable'));
+            updateDisplay('growth');
+        }
+
+        function initIndustryChart() {
+            const ctx = document.getElementById('industryPeChart').getContext('2d');
+            const industryInfoEl = document.getElementById('industry-info');
+            const industryData = {
+                labels: ['软件 - 应用', '半导体', '航空航天与国防', '公用事业 - 电力', '资产管理'],
+                peValues: [39.61, 35.78, 32.88, 21.34, 13.57],
+                reasons: [
+                    '市场为高增长潜力和创新能力支付高溢价。',
+                    '处于技术前沿，受益于AI等趋势，增长预期高。',
+                    '订单周期长，有稳定的政府合同，但资本密集。',
+                    '增长稳定，现金流可预测，但增长空间有限。',
+                    '盈利与市场表现挂钩，周期性较强，估值相对保守。'
+                ]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: industryData.labels,
+                    datasets: [{
+                        label: '平均市盈率',
+                        data: industryData.peValues,
+                        backgroundColor: [
+                            'rgba(13, 148, 136, 0.6)',
+                            'rgba(8, 126, 126, 0.6)',
+                            'rgba(15, 118, 110, 0.6)',
+                            'rgba(14, 159, 110, 0.6)',
+                            'rgba(16, 185, 129, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(13, 148, 136, 1)',
+                            'rgba(8, 126, 126, 1)',
+                            'rgba(15, 118, 110, 1)',
+                            'rgba(14, 159, 110, 1)',
+                            'rgba(16, 185, 129, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `PE: ${context.raw.toFixed(2)}x`;
+                                }
+                            }
+                        }
+                    },
+                    onHover: (event, chartElement) => {
+                        if (chartElement.length) {
+                            const index = chartElement[0].index;
+                            industryInfoEl.textContent = industryData.reasons[index];
+                        } else {
+                            industryInfoEl.textContent = '将鼠标悬停在图表条目上查看详情';
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '市盈率 (倍)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initPegCalculator() {
+            const peInput = document.getElementById('peg-pe');
+            const growthInput = document.getElementById('peg-growth');
+            const resultEl = document.getElementById('peg-result');
+            const interpretationEl = document.getElementById('peg-interpretation');
+
+            function calculatePEG() {
+                const pe = parseFloat(peInput.value) || 0;
+                const growth = parseFloat(growthInput.value) || 0;
+
+                if (growth > 0) {
+                    const peg = pe / growth;
+                    resultEl.textContent = peg.toFixed(2);
+
+                    interpretationEl.classList.remove('text-green-600', 'text-yellow-600', 'text-red-600');
+                    if (peg < 1.0) {
+                        interpretationEl.textContent = '可能被低估';
+                        interpretationEl.classList.add('text-green-600');
+                    } else if (peg >= 1.0 && peg <= 1.2) {
+                        interpretationEl.textContent = '估值相对合理';
+                        interpretationEl.classList.add('text-yellow-600');
+                    } else {
+                        interpretationEl.textContent = '可能被高估';
+                        interpretationEl.classList.add('text-red-600');
+                    }
+                } else {
+                    resultEl.textContent = 'N/A';
+                    interpretationEl.textContent = '增长率必须为正数';
+                    interpretationEl.className = 'text-sm font-medium mt-1 text-slate-500';
+                }
+            }
+
+            peInput.addEventListener('input', calculatePEG);
+            growthInput.addEventListener('input', calculatePEG);
+            calculatePEG();
+        }
+
+        function initNavScroll() {
+            const sections = document.querySelectorAll('.content-section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-100px 0px -50% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        }
+
+        initPeCalculator();
+        initPeSpread();
+        initIndustryChart();
+        initPegCalculator();
+        initNavScroll();
+    });
+</script>
+</body>
+</html>

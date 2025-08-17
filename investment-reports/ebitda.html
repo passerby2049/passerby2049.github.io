@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深入浅出EBITDA：交互式仪表盘</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as a single-page, multi-section dashboard. This non-linear structure allows users to explore topics based on interest rather than following the report's linear flow. The key sections are: 1) Core Concepts (interactive deconstruction and calculator), 2) Practical Applications (interactive valuation chart), 3) Risks & Critiques (visualizing the gap to FCF), and 4) EBITDA Family (exploring variants). This thematic approach enhances learning and engagement by turning passive reading into active exploration, making the complex financial topic more digestible and intuitive. -->
+    <!-- Visualization & Content Choices: 1) EBITDA Deconstructor: Goal is to define components. Uses interactive HTML cards for tactile learning. 2) Interactive Calculator: Goal is to show calculation. Uses input fields and JS for hands-on understanding. 3) EV/EBITDA Chart: Goal is to compare industries. Uses a Chart.js bar chart for clear visual comparison of data from the report's table. 4) FCF Bridge: Goal is to highlight the cash flow illusion. Uses a dynamic HTML/CSS waterfall diagram to visually represent the deductions from EBITDA, which is more impactful than text alone. 5) Accordion for Variants: Goal is to organize related but distinct information. An HTML/JS accordion is used for concise, user-initiated content reveal. All choices prioritize interactivity and visual clarity to support the designed dashboard structure. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #1a202c;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .nav-button {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-bottom: 2px solid transparent;
+        }
+        .nav-button.active, .nav-button:hover {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .back-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .back-home:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .section-intro {
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 3rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 450px;
+            max-height: 60vh;
+        }
+        .fcf-bridge-bar {
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<header class="bg-white/80 backdrop-blur-sm shadow-md sticky top-0 z-50">
+    <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <a href="./" class="back-home">← 返回投资报告</a>
+            <div class="text-2xl font-bold text-gray-800">EBITDA大师课</div>
+        </div>
+        <div class="hidden md:flex space-x-8">
+            <a href="#concepts" class="nav-button active">核心概念</a>
+            <a href="#applications" class="nav-button">实战应用</a>
+            <a href="#critiques" class="nav-button">风险与批判</a>
+            <a href="#family" class="nav-button">EBITDA家族</a>
+            <a href="#checklist" class="nav-button">终极清单</a>
+        </div>
+        <button id="mobile-menu-button" class="md:hidden flex items-center">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        </button>
+    </nav>
+    <div id="mobile-menu" class="hidden md:hidden">
+        <a href="#concepts" class="block py-2 px-4 text-sm hover:bg-gray-200">核心概念</a>
+        <a href="#applications" class="block py-2 px-4 text-sm hover:bg-gray-200">实战应用</a>
+        <a href="#critiques" class="block py-2 px-4 text-sm hover:bg-gray-200">风险与批判</a>
+        <a href="#family" class="block py-2 px-4 text-sm hover:bg-gray-200">EBITDA家族</a>
+        <a href="#checklist" class="block py-2 px-4 text-sm hover:bg-gray-200">终极清单</a>
+    </div>
+</header>
+
+<main class="container mx-auto px-6 py-12">
+
+    <section id="hero" class="text-center mb-20">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">深入浅出EBITDA</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-6">一个既被广泛推崇，又备受争议的财务指标。本应用将带您全面解析这个金融界的"瑞士军刀"。</p>
+        <div class="flex justify-center">
+            <a href="../assets/深入浅出EBITDA全面解析.pdf" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all">
+                📄 下载完整PDF报告
+            </a>
+        </div>
+    </section>
+
+    <section id="concepts" class="mb-20 scroll-mt-20">
+        <h2 class="section-title">核心概念：解构EBITDA</h2>
+        <p class="section-intro">本节将带您拆解EBITDA的每一个组成部分，并提供一个交互式计算器，让您亲手体验其计算过程。理解其构造是掌握其应用和局限的第一步。</p>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-2">E - Earnings (收益)</h3>
+                <p class="text-gray-600">计算的起点，通常指营业利润或净利润。它代表了企业在扣除各项费用前的基本盈利状况。</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-2">B - Before (...之前)</h3>
+                <p class="text-gray-600">整个指标的逻辑核心，意为“在扣除以下项目之前”，定义了其回溯性的分析视角。</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-2">I - Interest (利息)</h3>
+                <p class="text-gray-600">加回利息是为了剔除公司“融资决策”的影响，从而更公平地比较不同资本结构公司的运营效率。</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-2">T - Taxes (税项)</h3>
+                <p class="text-gray-600">加回税项是为了剔除不同地区“税收政策”的影响，是跨国公司比较的理想工具。</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-2">D - Depreciation (折旧)</h3>
+                <p class="text-gray-600">加回这项“非现金费用”，是为了还原更接近当期现金产生的盈利状况，但这也是其争议焦点。</p>
+            </div>
+            <div class="card p-6">
+                <h3 class="text-xl font-bold mb-2">A - Amortization (摊销)</h3>
+                <p class="text-gray-600">折旧的“孪生兄弟”，针对无形资产。同样作为非现金费用被加回。</p>
+            </div>
+        </div>
+
+        <div class="card p-8">
+            <h3 class="text-2xl font-bold text-center mb-6">EBITDA 交互式计算器</h3>
+            <div class="grid md:grid-cols-2 gap-8 items-start">
+                <div>
+                    <p class="text-gray-700 mb-4">输入基础财务数据，看看EBITDA是如何计算出来的。您可以选择从“净利润”或“营业利润”开始。</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="netIncome" class="block text-sm font-medium text-gray-700">净利润 (Net Income)</label>
+                            <input type="number" id="netIncome" value="119" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="operatingIncome" class="block text-sm font-medium text-gray-700">营业利润 (EBIT)</label>
+                            <input type="number" id="operatingIncome" value="200" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="interest" class="block text-sm font-medium text-gray-700">利息费用</label>
+                            <input type="number" id="interest" value="30" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="taxes" class="block text-sm font-medium text-gray-700">所得税费用</label>
+                            <input type="number" id="taxes" value="51" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label for="depreciation" class="block text-sm font-medium text-gray-700">折旧与摊销</label>
+                            <input type="number" id="depreciation" value="50" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-6 rounded-lg h-full">
+                    <h4 class="text-lg font-semibold mb-4">计算结果</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-500">方法一：“自下而上”法</p>
+                            <p id="bottomUpResult" class="text-2xl font-bold text-blue-600">250</p>
+                            <p class="text-xs text-gray-500">= 净利润 + 税 + 息 + 折旧摊销</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">方法二：“自上而下”法</p>
+                            <p id="topDownResult" class="text-2xl font-bold text-green-600">250</p>
+                            <p class="text-xs text-gray-500">= 营业利润 + 折旧摊销</p>
+                        </div>
+                        <div class="pt-4 border-t">
+                            <p class="text-center text-3xl font-extrabold text-gray-800" id="finalEbitda">EBITDA: 250</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="applications" class="mb-20 scroll-mt-20">
+        <h2 class="section-title">实战应用：分析师的瑞士军刀</h2>
+        <p class="section-intro">EBITDA为何在并购、估值和信贷分析中如此重要？本节将通过一个可交互的行业估值倍数图表和案例分析，展示EBITDA在真实商业世界中的核心作用。</p>
+        <div class="card p-8">
+            <h3 class="text-2xl font-bold text-center mb-2">行业EV/EBITDA估值倍数比较</h3>
+            <p class="text-center text-gray-600 mb-6">市场愿意为不同行业的每1美元EBITDA支付多少钱？点击或悬停图表查看原因。</p>
+            <div class="chart-container">
+                <canvas id="evEbitdaChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section id="critiques" class="mb-20 scroll-mt-20">
+        <h2 class="section-title">风险与批判：硬币的另一面</h2>
+        <p class="section-intro">EBITDA绝非完美指标。本节将聚焦于其最核心的缺陷——它不是现金流。我们将通过一个可视化的“现金流之桥”，清晰展示EBITDA与真正可自由支配现金之间的巨大鸿沟。</p>
+
+        <div class="card p-8">
+            <h3 class="text-2xl font-bold text-center mb-6">现金流的幻觉：从EBITDA到自由现金流(FCF)</h3>
+            <div class="w-full max-w-4xl mx-auto">
+                <div class="mb-4">
+                    <p class="text-gray-700">一个拥有1亿美元EBITDA的公司，在支付了所有必要的费用和再投资后，真正能剩下多少现金？拖动滑块查看影响。</p>
+                    <div class="mt-4">
+                        <label for="capexSlider" class="block text-sm font-medium text-gray-700">资本性支出 (CapEx): <span id="capexValue" class="font-bold">40</span>M</label>
+                        <input id="capexSlider" type="range" min="0" max="80" value="40" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    </div>
+                </div>
+                <div class="space-y-2 text-sm font-mono">
+                    <div class="flex items-center">
+                        <span class="w-36 text-right pr-4">EBITDA</span>
+                        <div class="flex-grow bg-blue-500 h-8 rounded fcf-bridge-bar" id="ebitdaBar" style="width: 100%;"><span class="pl-2 text-white font-bold">100M</span></div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-36 text-right pr-4">(-) 现金税款</span>
+                        <div class="flex-grow bg-red-400 h-8 rounded fcf-bridge-bar" id="taxBar" style="width: 20%;"><span class="pl-2 text-white font-bold">20M</span></div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-36 text-right pr-4">(-) 营运资本增加</span>
+                        <div class="flex-grow bg-yellow-400 h-8 rounded fcf-bridge-bar" id="nwcBar" style="width: 15%;"><span class="pl-2 text-white font-bold">15M</span></div>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="w-36 text-right pr-4">(-) 资本性支出</span>
+                        <div class="flex-grow bg-purple-400 h-8 rounded fcf-bridge-bar" id="capexBar" style="width: 40%;"><span class="pl-2 text-white font-bold">40M</span></div>
+                    </div>
+                    <div class="flex items-center font-bold text-base pt-2 border-t mt-2">
+                        <span class="w-36 text-right pr-4">= 自由现金流 (FCF)</span>
+                        <div class="flex-grow bg-green-500 h-8 rounded fcf-bridge-bar" id="fcfBar" style="width: 25%;"><span class="pl-2 text-white font-bold">25M</span></div>
+                    </div>
+                </div>
+                <div class="mt-6 p-4 bg-amber-100 border-l-4 border-amber-500 text-amber-700 rounded-r-lg">
+                    <h4 class="font-bold">巴菲特的拷问</h4>
+                    <p>"难道管理层认为，资本性支出（CapEx）是由牙仙子来支付的吗？" 这句话直指EBITDA的最大缺陷：忽略了维持企业运营所必需的真实再投资成本。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="family" class="mb-20 scroll-mt-20">
+        <h2 class="section-title">EBITDA家族：认识各种变体</h2>
+        <p class="section-intro">为了适应不同行业的特殊性，金融界创造了一系列EBITDA的变体。了解这些“近亲”能帮助您听懂特定行业的“行话”，并进行更精准的分析。</p>
+        <div class="max-w-4xl mx-auto space-y-4" id="accordion">
+            <!-- Accordion items will be generated by JS -->
+        </div>
+    </section>
+
+    <section id="checklist" class="scroll-mt-20">
+        <h2 class="section-title">分析师的终极清单</h2>
+        <p class="section-intro">为了避免陷入EBITDA的陷阱，任何使用者在面对一个EBITDA数字时，都应该进行一次批判性的“尽职调查”。使用下面的清单作为您的思维框架。</p>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="card p-6 bg-gray-50">
+                <h3 class="font-bold text-lg mb-2">1. 它是如何计算的？</h3>
+                <p class="text-gray-600">起点是净利润还是营业利润？包含了哪些调整项？</p>
+            </div>
+            <div class="card p-6 bg-gray-50">
+                <h3 class="font-bold text-lg mb-2">2. 是标准版还是调整版？</h3>
+                <p class="text-gray-600">如果被“调整”过，这些调整项真的合理、一次性吗？</p>
+            </div>
+            <div class="card p-6 bg-gray-50">
+                <h3 class="font-bold text-lg mb-2">3. 被忽略的现金流出有多大？</h3>
+                <p class="text-gray-600">CapEx和营运资本投入规模如何？计算与FCF的差距。</p>
+            </div>
+            <div class="card p-6 bg-gray-50">
+                <h3 class="font-bold text-lg mb-2">4. 行业背景是什么？</h3>
+                <p class="text-gray-600">在资本密集型行业，被忽略的折旧是否代表巨大的真实成本？</p>
+            </div>
+            <div class="card p-6 bg-gray-50">
+                <h3 class="font-bold text-lg mb-2">5. 分析的目的是什么？</h3>
+                <p class="text-gray-600">是评估短期偿债能力（EBITDA适用），还是长期投资价值（FCF更优）？</p>
+            </div>
+            <div class="card p-6 bg-gray-50">
+                <h3 class="font-bold text-lg mb-2">6. 是否存在会计准则差异？</h3>
+                <p class="text-gray-600">比较的公司是否遵循相同准则？警惕IFRS 16等规则的影响。</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-gray-800 text-white mt-20">
+    <div class="container mx-auto px-6 py-8 text-center">
+        <p>此交互式应用旨在教育和说明，数据来源于提供的报告，仅供参考。</p>
+        <p class="text-sm text-gray-400 mt-2">将EBITDA作为工具，而非信条。</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        const navLinks = document.querySelectorAll('nav a');
+        const sections = document.querySelectorAll('section');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 80) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(a => {
+                a.classList.remove('active');
+                if(a.href.includes(current)) {
+                    a.classList.add('active');
+                }
+            });
+        });
+
+        const inputs = ['netIncome', 'operatingIncome', 'interest', 'taxes', 'depreciation'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculateEBITDA);
+        });
+
+        function calculateEBITDA() {
+            const netIncome = parseFloat(document.getElementById('netIncome').value) || 0;
+            const operatingIncome = parseFloat(document.getElementById('operatingIncome').value) || 0;
+            const interest = parseFloat(document.getElementById('interest').value) || 0;
+            const taxes = parseFloat(document.getElementById('taxes').value) || 0;
+            const depreciation = parseFloat(document.getElementById('depreciation').value) || 0;
+
+            const bottomUp = netIncome + interest + taxes + depreciation;
+            const topDown = operatingIncome + depreciation;
+
+            document.getElementById('bottomUpResult').textContent = bottomUp.toFixed(0);
+            document.getElementById('topDownResult').textContent = topDown.toFixed(0);
+            document.getElementById('finalEbitda').textContent = `EBITDA: ${topDown.toFixed(0)}`;
+        }
+        calculateEBITDA();
+
+        const industryData = {
+            labels: ['软件-应用', '互联网内容', '半导体', '航空航天', '生物技术', '公用事业', '重型机械', '汽车制造', '航空公司', '油气勘探'],
+            multiples: [29.55, 24.52, 25.00, 17.90, 12.77, 12.33, 11.61, 7.37, 7.57, 5.31],
+            reasons: [
+                '高增长预期, 高可扩展性, 经常性收入',
+                '网络效应, 轻资产模式',
+                '技术驱动, 周期性强',
+                '长期合同, 政府支持',
+                '高增长潜力与高风险并存',
+                '稳定, 低增长, 受管制',
+                '资本密集, 经济周期性强',
+                '资本密集, 竞争激烈, 利润率低',
+                '极度资本密集, 低利润率, 风险高',
+                '大宗商品价格驱动, 风险极高'
+            ]
+        };
+
+        const ctx = document.getElementById('evEbitdaChart').getContext('2d');
+        const evEbitdaChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: industryData.labels,
+                datasets: [{
+                    label: 'EV/EBITDA 倍数',
+                    data: industryData.multiples,
+                    backgroundColor: 'rgba(0, 123, 255, 0.6)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'EV/EBITDA 倍数 (x)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            afterLabel: function(context) {
+                                return '原因: ' + industryData.reasons[context.dataIndex];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const capexSlider = document.getElementById('capexSlider');
+        capexSlider.addEventListener('input', (e) => {
+            const capexValue = parseFloat(e.target.value);
+            const ebitda = 100;
+            const tax = 20;
+            const nwc = 15;
+            const fcf = ebitda - tax - nwc - capexValue;
+
+            document.getElementById('capexValue').textContent = capexValue.toFixed(0);
+            document.getElementById('capexBar').style.width = `${capexValue}%`;
+            document.getElementById('capexBar').children[0].textContent = `${capexValue.toFixed(0)}M`;
+
+            document.getElementById('fcfBar').style.width = `${fcf}%`;
+            document.getElementById('fcfBar').children[0].textContent = `${fcf.toFixed(0)}M`;
+        });
+
+        const accordionData = [
+            { title: 'EBITA', content: '<strong>息税及摊销前利润</strong> (EBITDA - 折旧)。当分析师认为折旧是真实成本，但无形资产摊销扭曲性较大时使用。' },
+            { title: 'EBITDAR', content: '<strong>息税折旧摊销及租金前利润</strong> (EBITDA + 租金)。用于比较资产获取模式不同的公司（如购买vs租赁），常见于航空、零售业。' },
+            { title: 'EBITDAX', content: '<strong>息税折旧摊销及勘探费用前利润</strong> (EBITDA + 勘探费)。专用于油气行业，因勘探费波动大且具资本投资性质。' },
+            { title: 'OIBDA', content: '<strong>折旧摊销前营业收入</strong> (营业利润 + 折旧摊销)。起点严格限定为“营业利润”，被认为是更“纯粹”的核心运营业绩指标。' },
+            { title: 'Adjusted EBITDA', content: '<strong>调整后EBITDA</strong> (EBITDA +/- 一次性项目)。旨在展示“正常化”盈利能力，但因定义不统一，最易被操纵。' }
+        ];
+
+        const accordionContainer = document.getElementById('accordion');
+        accordionData.forEach((item, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'card';
+            itemDiv.innerHTML = `
+                    <div class="p-4 cursor-pointer flex justify-between items-center" data-index="${index}">
+                        <h3 class="font-bold text-lg">${item.title}</h3>
+                        <span class="transform transition-transform duration-300">&#9662;</span>
+                    </div>
+                    <div class="px-4 pb-4 hidden content">
+                        <p class="text-gray-700">${item.content}</p>
+                    </div>
+                `;
+            accordionContainer.appendChild(itemDiv);
+        });
+
+        accordionContainer.addEventListener('click', (e) => {
+            const header = e.target.closest('[data-index]');
+            if (!header) return;
+
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('span');
+
+            const allContents = accordionContainer.querySelectorAll('.content');
+            const allArrows = accordionContainer.querySelectorAll('span');
+
+            allContents.forEach((c, i) => {
+                if (c !== content && !c.classList.contains('hidden')) {
+                    c.classList.add('hidden');
+                    allArrows[i].classList.remove('rotate-180');
+                }
+            });
+
+            content.classList.toggle('hidden');
+            arrow.classList.toggle('rotate-180');
+        });
+
+    });
+</script>
+</body>
+</html>

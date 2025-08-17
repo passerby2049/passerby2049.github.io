@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>交互式GAAP探索指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as a single-page, scrollable learning journey, moving from foundational concepts to practical applications and advanced topics. The structure prioritizes interactive learning over linear text. It starts with a "Why it Matters" section, moves to interactive "Core Principles" where users can manipulate data, then to a "GAAP in Action" section simulating a 10-K report, followed by "Advanced Comparisons" with interactive charts, and concludes with "The Future of GAAP". This thematic, hands-on approach was chosen to make the complex and often dry subject of accounting engaging and intuitive for investors, helping them build a strong mental model of how GAAP works in practice. -->
+    <!-- Visualization & Content Choices: The report's key concepts are transformed into interactive modules. For instance, the Accrual vs. Cash basis concept is shown via a toggleable Chart.js bar chart (Goal: Compare, Interaction: Toggle), allowing users to see the impact of accounting methods instantly. The GAAP vs. Non-GAAP reconciliation is also a Chart.js bar chart where users can add back adjustments (Goal: Compare, Interaction: Click-to-add), making an abstract table tangible. The shift to intangible assets is visualized with a dynamic Chart.js donut chart (Goal: Change, Interaction: Button click). Complex comparisons like US GAAP vs. IFRS are broken down into clickable cards (Goal: Organize, Interaction: Click-to-reveal). This strategy uses interactivity to clarify complex relationships and processes, ensuring better user comprehension and retention. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #1a202c;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .back-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .back-home:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        .interactive-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .interactive-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .btn-primary {
+            background-color: #64748b;
+            color: #FFFFFF;
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #475569;
+        }
+        .btn-secondary {
+            background-color: #81B29A;
+            color: #FFFFFF;
+            transition: background-color 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #6A9F85;
+        }
+        .section-title {
+            border-bottom: 2px solid #64748b;
+            padding-bottom: 8px;
+            display: inline-block;
+        }
+        .tab-button.active {
+            background-color: #64748b;
+            color: white;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<!-- Header & Navigation -->
+<header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+    <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <a href="./" class="back-home">← 返回投资报告</a>
+            <h1 class="text-xl md:text-2xl font-bold text-[#3D405B]">解码GAAP</h1>
+        </div>
+        <div class="hidden md:flex space-x-8">
+            <a href="#foundation" class="nav-link pb-1">基石</a>
+            <a href="#principles" class="nav-link pb-1">核心原则</a>
+            <a href="#action" class="nav-link pb-1">实际应用</a>
+            <a href="#beyond" class="nav-link pb-1">标准之外</a>
+            <a href="#future" class="nav-link pb-1">未来挑战</a>
+        </div>
+        <div class="md:hidden">
+            <select id="mobile-nav" class="bg-gray-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#E07A5F] focus:border-[#E07A5F] block w-full p-2.5">
+                <option value="#foundation">基石</option>
+                <option value="#principles">核心原则</option>
+                <option value="#action">实际应用</option>
+                <option value="#beyond">标准之外</option>
+                <option value="#future">未来挑战</option>
+            </select>
+        </div>
+    </nav>
+</header>
+
+<main class="container mx-auto px-6 py-8 md:py-12">
+
+    <!-- Welcome Section -->
+    <section class="text-center mb-16 md:mb-24">
+        <h2 class="text-3xl md:text-5xl font-bold mb-4">穿越财务迷雾的指南</h2>
+        <p class="max-w-3xl mx-auto text-lg text-gray-600 mb-6">GAAP听起来复杂，但它其实是投资者的"通用语言"。这个交互式指南将帮您轻松掌握它，看懂公司财报背后的真实故事。</p>
+        <div class="flex justify-center">
+            <a href="../assets/深入理解股票中的GAAP.pdf" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all">
+                📄 下载完整PDF报告
+            </a>
+        </div>
+    </section>
+
+    <!-- Section 1: Foundation -->
+    <section id="foundation" class="mb-16 md:mb-24 scroll-mt-20">
+        <h3 class="text-3xl font-bold text-center mb-12 section-title">第一站：GAAP的基石</h3>
+        <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">要看懂财报，首先得有统一的“游戏规则”。GAAP就是这套规则，它为所有投资者创造了一个公平的竞争环境。它的核心目标是确保财务报表具备三个关键特性：</p>
+        <div class="grid md:grid-cols-3 gap-8 text-center">
+            <div class="bg-white p-8 rounded-xl shadow-md interactive-card">
+                <div class="text-4xl mb-4">⚖️</div>
+                <h4 class="text-xl font-bold mb-2">一致性</h4>
+                <p class="text-gray-600">公司在不同时期采用相同的会计方法，不能随意变更，确保纵向可比。</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-md interactive-card">
+                <div class="text-4xl mb-4">🤝</div>
+                <h4 class="text-xl font-bold mb-2">可比性</h4>
+                <p class="text-gray-600">不同公司遵循相同标准，让投资者可以进行“同类”比较。</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-md interactive-card">
+                <div class="text-4xl mb-4">🔍</div>
+                <h4 class="text-xl font-bold mb-2">透明度</h4>
+                <p class="text-gray-600">强制公司披露所有重要信息，无论是好是坏，防止隐藏信息。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: Core Principles -->
+    <section id="principles" class="mb-16 md:mb-24 scroll-mt-20">
+        <h3 class="text-3xl font-bold text-center mb-12 section-title">第二站：深入核心原则</h3>
+        <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">理论太空洞？让我们通过互动案例，亲手“体验”GAAP最重要的几项原则是如何运作的。</p>
+
+        <!-- Accrual Basis Interactive -->
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-12">
+            <h4 class="text-2xl font-bold mb-2">权责发生制：利润 ≠ 现金</h4>
+            <p class="mb-6 text-gray-600">这是现代会计的基石。收入和费用在“赚取”或“发生”时记录，而不是在收到或支付现金时。让我们看看房东收租的例子：</p>
+            <div class="text-center mb-6">
+                <span class="mr-2">现金制</span>
+                <label for="accrualToggle" class="inline-flex relative items-center cursor-pointer">
+                    <input type="checkbox" value="" id="accrualToggle" class="sr-only peer">
+                    <div class="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[#81B29A]"></div>
+                </label>
+                <span class="ml-2">权责发生制 (GAAP)</span>
+            </div>
+            <p class="text-center mb-4 text-gray-800 font-medium" id="accrual-text">房东在1月一次性收到全年租金$12,000。在现金制下，1月收入爆炸，之后11个月为零，这显然不能反映真实的经营状况。</p>
+            <div class="chart-container">
+                <canvas id="accrualChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Revenue Recognition Interactive -->
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-12">
+            <h4 class="text-2xl font-bold mb-2">收入确认原则：钱何时算“赚到”？</h4>
+            <p class="mb-6 text-gray-600">以SaaS公司为例，它在1月收到客户全年订阅费$1,200。这笔钱不能马上算作收入，因为它代表了公司未来12个月提供服务的“义务”。这笔钱会先记为“递延收入”（一项负债），然后逐月确认为收入。</p>
+            <div class="w-full bg-gray-200 rounded-full h-8 dark:bg-gray-700">
+                <div id="revenue-progress" class="bg-[#81B29A] h-8 rounded-full text-center text-white font-medium leading-8" style="width: 8.33%">1/12</div>
+            </div>
+            <div class="text-center mt-4">
+                <button id="revenue-button" class="btn-secondary px-4 py-2 rounded-lg">模拟下个月</button>
+            </div>
+        </div>
+
+        <!-- Matching Principle -->
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+            <h4 class="text-2xl font-bold mb-2">配比原则：收入与成本的结合</h4>
+            <p class="mb-6 text-gray-600">为了创造收入而发生的成本，必须和这些收入在同一时期记录。假设您卖钢笔，1月花$5000买了1000支笔。2月以$8/支的价格卖了800支。您的利润是多少？</p>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <p><strong>错误做法：</strong>用全部收入减去全部采购成本。</p>
+                    <p class="text-2xl font-bold text-red-500">$8,000 - $5,000 = $3,000</p>
+                    <p class="text-sm text-gray-500">这忽略了仓库里还剩下的200支笔的价值。</p>
+                </div>
+                <div>
+                    <p><strong>正确做法 (GAAP)：</strong>用收入减去<span class="font-bold text-[#E07A5F]">已售出商品</span>的成本。</p>
+                    <p class="text-2xl font-bold text-green-600">$8,000 - (800支 * $5) = $4,000</p>
+                    <p class="text-sm text-gray-500">剩下的$1000成本作为“存货”留在资产负债表上。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: GAAP in Action -->
+    <section id="action" class="mb-16 md:mb-24 scroll-mt-20">
+        <h3 class="text-3xl font-bold text-center mb-12 section-title">第三站：在报告中寻找GAAP</h3>
+        <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">理论学完了，去哪里找这些信息？对于投资者，最重要的文件就是公司的10-K年报。它就像一张藏宝图，点击下方模块，看看应该关注什么。</p>
+        <div class="bg-white p-8 rounded-xl shadow-lg flex flex-col md:flex-row gap-8">
+            <div class="md:w-1/3">
+                <ul class="space-y-2">
+                    <li><button class="w-full text-left p-3 rounded-lg tab-button active" data-target="mda">项目7: 管理层的讨论与分析 (MD&A)</button></li>
+                    <li><button class="w-full text-left p-3 rounded-lg tab-button" data-target="statements">项目8: 财务报表及补充数据</button></li>
+                    <li><button class="w-full text-left p-3 rounded-lg tab-button" data-target="notes">财务报表附注</button></li>
+                    <li><button class="w-full text-left p-3 rounded-lg tab-button" data-target="auditor">审计师意见</button></li>
+                </ul>
+            </div>
+            <div class="md:w-2/3 bg-gray-50 p-6 rounded-lg">
+                <div id="mda" class="tab-content">
+                    <h4 class="text-xl font-bold mb-2">管理层的讨论与分析 (MD&A)</h4>
+                    <p class="text-gray-600">这是管理层用自己的话解释公司业绩。在这里，你能读到他们对业务的看法，以及收入增长、成本变化等数字背后的故事。这是理解公司战略和挑战的第一手资料。</p>
+                </div>
+                <div id="statements" class="tab-content hidden">
+                    <h4 class="text-xl font-bold mb-2">财务报表及补充数据</h4>
+                    <p class="text-gray-600">10-K的核心，包含经过审计的三大报表：利润表、资产负债表、现金流量表。这些是完全符合GAAP的官方数据，是所有分析的基础。</p>
+                </div>
+                <div id="notes" class="tab-content hidden">
+                    <h4 class="text-xl font-bold mb-2">财务报表附注</h4>
+                    <p class="text-gray-600">如果说三大报表是故事梗概，附注就是全部细节。专业分析师会在这里花最多时间。公司必须披露具体的会计政策，比如收入如何确认、存货如何计价。不读附注，就不可能真正理解报表数字。</p>
+                </div>
+                <div id="auditor" class="tab-content hidden">
+                    <h4 class="text-xl font-bold mb-2">审计师意见</h4>
+                    <p class="text-gray-600">由独立会计师事务所出具的“质量认证”。最好的结果是“无保留意见”，相当于健康证明。如果出现“保留意见”或“否定意见”，就是重大危险信号，必须警惕。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 4: Beyond the Rules -->
+    <section id="beyond" class="mb-16 md:mb-24 scroll-mt-20">
+        <h3 class="text-3xl font-bold text-center mb-12 section-title">第四站：标准之外的“方言”</h3>
+        <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">掌握了基础后，您会遇到一些更复杂的概念。比如公司自己调整的“Non-GAAP”指标，以及美国GAAP与国际准则IFRS的差异。</p>
+
+        <!-- GAAP vs Non-GAAP -->
+        <div class="bg-white p-8 rounded-xl shadow-lg mb-12">
+            <h4 class="text-2xl font-bold mb-2">GAAP vs. Non-GAAP：“调整后”利润的真相</h4>
+            <p class="mb-6 text-gray-600">公司常会公布一个“调整后利润”，声称这更能反映“核心”业务。它们通常会剔除一些“一次性”或“非现金”费用。点击下方按钮，看看这个调整过程如何“美化”利润。</p>
+            <div class="chart-container mb-6">
+                <canvas id="nonGaapChart"></canvas>
+            </div>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button id="reset-btn" class="btn-primary px-4 py-2 rounded-lg">重置</button>
+                <button class="non-gaap-btn btn-secondary px-4 py-2 rounded-lg" data-value="50" data-label="并购资产摊销">加回：并购资产摊销 (+$50M)</button>
+                <button class="non-gaap-btn btn-secondary px-4 py-2 rounded-lg" data-value="75" data-label="股权激励费用">加回：股权激励费用 (+$75M)</button>
+                <button class="non-gaap-btn btn-secondary px-4 py-2 rounded-lg" data-value="25" data-label="重组费用">加回：重组费用 (+$25M)</button>
+            </div>
+            <p class="text-center mt-4 text-sm text-gray-500"><strong>提醒：</strong>Non-GAAP指标没有统一标准，直接用A公司的Non-GAAP利润对比B公司是危险的。</p>
+        </div>
+
+        <!-- US GAAP vs IFRS -->
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+            <h4 class="text-2xl font-bold mb-2">US GAAP vs. IFRS：全球投资者的必修课</h4>
+            <p class="mb-6 text-gray-600">投资全球市场，会遇到另一套准则IFRS。两者哲学不同：GAAP更像法典（基于规则），IFRS更像宪法（基于原则）。这导致了一些关键差异：</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="border border-gray-200 p-6 rounded-lg interactive-card">
+                    <h5 class="font-bold text-lg mb-2">存货计价</h5>
+                    <p><strong>GAAP:</strong> 允许使用后进先出法(LIFO)。</p>
+                    <p><strong>IFRS:</strong> <span class="text-red-500 font-bold">禁止</span>使用LIFO。</p>
+                    <p class="text-sm text-gray-500 mt-2">影响：通胀时，用LIFO的美国公司利润可能更低。</p>
+                </div>
+                <div class="border border-gray-200 p-6 rounded-lg interactive-card">
+                    <h5 class="font-bold text-lg mb-2">资产重估</h5>
+                    <p><strong>GAAP:</strong> 通常禁止对厂房等资产按市价重估。</p>
+                    <p><strong>IFRS:</strong> <span class="text-green-600 font-bold">允许</span>按公允价值重估。</p>
+                    <p class="text-sm text-gray-500 mt-2">影响：采用IFRS的公司资产账面价值可能更高。</p>
+                </div>
+                <div class="border border-gray-200 p-6 rounded-lg interactive-card">
+                    <h5 class="font-bold text-lg mb-2">研发成本</h5>
+                    <p><strong>GAAP:</strong> 所有研发成本通常都费用化。</p>
+                    <p><strong>IFRS:</strong> 符合条件的<span class="text-green-600 font-bold">开发成本</span>可以资本化为资产。</p>
+                    <p class="text-sm text-gray-500 mt-2">影响：采用IFRS的公司当期利润可能更高。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 5: Future -->
+    <section id="future" class="scroll-mt-20">
+        <h3 class="text-3xl font-bold text-center mb-12 section-title">第五站：GAAP的未来挑战</h3>
+        <p class="text-center max-w-3xl mx-auto mb-12 text-gray-600">会计准则也在不断进化，以适应新的经济模式。当前最大的挑战是如何衡量知识经济时代的无形资产，以及如何应对加密货币等新兴事物。</p>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h4 class="text-2xl font-bold mb-2">无形资产的困境</h4>
+                <p class="mb-4 text-gray-600">在今天，公司价值越来越多地来自品牌、专利等无形资产。但GAAP通常禁止公司记录自己创造的无形资产。这导致公司“账面价值”和“市场价值”严重脱节。</p>
+                <p class="text-center font-bold mb-4">S&P 500公司价值来源</p>
+                <div class="chart-container h-64">
+                    <canvas id="intangibleChart"></canvas>
+                </div>
+                <div class="text-center mt-4">
+                    <button id="year-1975" class="btn-primary px-4 py-2 rounded-lg">1975年</button>
+                    <button id="year-2020" class="btn-secondary px-4 py-2 rounded-lg">2020年</button>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-lg">
+                <h4 class="text-2xl font-bold mb-2">加密货币的难题</h4>
+                <p class="mb-4 text-gray-600">面对比特币等加密资产，旧规则导致财报严重失真。FASB终于在2023年底发布新规，要求按公允价值（市价）计量。</p>
+                <div class="border border-gray-200 p-4 rounded-lg mb-4">
+                    <h5 class="font-bold">旧规则 (无限期无形资产)</h5>
+                    <p class="text-sm text-gray-600">以成本价记录，价值下跌时减值，但价值回升时<span class="text-red-500">不能</span>向上调整。严重低估资产价值。</p>
+                </div>
+                <div class="border-2 border-[#81B29A] p-4 rounded-lg">
+                    <h5 class="font-bold">新规则 (ASU 2023-08)</h5>
+                    <p class="text-sm text-gray-600">在每个报告期末，按<span class="text-green-600">公允价值</span>计量，价值变动直接计入当期利润。更能反映经济现实。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="bg-gray-800 text-white mt-16 md:mt-24">
+    <div class="container mx-auto px-6 py-8 text-center">
+        <h3 class="text-2xl font-bold mb-4">恭喜您，完成了GAAP之旅！</h3>
+        <p class="max-w-3xl mx-auto text-gray-300">希望这个交互式指南能帮您将GAAP知识转化为投资优势。记住，财报分析是侦探工作，用好您的工具包，去审视、比较和质疑数字背后的商业现实。</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Navigation ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sections = document.querySelectorAll('section');
+        const mobileNav = document.getElementById('mobile-nav');
+
+        function changeActiveLink() {
+            let index = sections.length;
+            while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
+            navLinks.forEach((link) => link.classList.remove('active'));
+            if (index > -1 && navLinks[index]) {
+                navLinks[index].classList.add('active');
+            }
+        }
+        window.addEventListener('scroll', changeActiveLink);
+        changeActiveLink();
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        mobileNav.addEventListener('change', (e) => {
+            document.querySelector(e.target.value).scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // --- Section 2: Accrual Chart ---
+        const accrualCtx = document.getElementById('accrualChart').getContext('2d');
+        const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        const cashData = [12000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const accrualData = Array(12).fill(1000);
+
+        const accrualChart = new Chart(accrualCtx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: '月度收入 ($)',
+                    data: cashData,
+                    backgroundColor: '#FBC6A4',
+                    borderColor: '#E07A5F',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `收入: $${context.parsed.y}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const accrualToggle = document.getElementById('accrualToggle');
+        const accrualText = document.getElementById('accrual-text');
+        accrualToggle.addEventListener('change', function() {
+            if (this.checked) {
+                accrualChart.data.datasets[0].data = accrualData;
+                accrualText.textContent = '在权责发生制下，尽管现金已到手，但公司每月只“赚取”$1,000，这提供了一个更准确、更平滑的业绩图景。';
+            } else {
+                accrualChart.data.datasets[0].data = cashData;
+                accrualText.textContent = '房东在1月一次性收到全年租金$12,000。在现金制下，1月收入爆炸，之后11个月为零，这显然不能反映真实的经营状况。';
+            }
+            accrualChart.update();
+        });
+
+        // --- Section 2: Revenue Recognition ---
+        const revenueProgress = document.getElementById('revenue-progress');
+        const revenueButton = document.getElementById('revenue-button');
+        let currentMonth = 1;
+        revenueButton.addEventListener('click', function() {
+            currentMonth++;
+            if (currentMonth > 12) {
+                currentMonth = 1;
+            }
+            const percentage = (currentMonth / 12) * 100;
+            revenueProgress.style.width = `${percentage}%`;
+            revenueProgress.textContent = `${currentMonth}/12`;
+        });
+
+        // --- Section 3: 10-K Tabs ---
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                tabContents.forEach(content => content.classList.add('hidden'));
+                document.getElementById(this.dataset.target).classList.remove('hidden');
+            });
+        });
+
+        // --- Section 4: Non-GAAP Chart ---
+        const nonGaapCtx = document.getElementById('nonGaapChart').getContext('2d');
+        let nonGaapChart;
+        const initialGaapProfit = 100;
+        let currentProfit = initialGaapProfit;
+        let addedAdjustments = new Set();
+
+        function createNonGaapChart() {
+            if(nonGaapChart) {
+                nonGaapChart.destroy();
+            }
+            nonGaapChart = new Chart(nonGaapCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['利润'],
+                    datasets: [{
+                        label: 'GAAP净利润',
+                        data: [initialGaapProfit],
+                        backgroundColor: '#81B29A',
+                        stack: 'stack0',
+                    }, {
+                        label: '调整项',
+                        data: [currentProfit - initialGaapProfit],
+                        backgroundColor: '#FBC6A4',
+                        stack: 'stack0',
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            stacked: true,
+                            title: {
+                                display: true,
+                                text: '金额 (百万美元)'
+                            }
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.datasetIndex === 0) {
+                                        return `GAAP 净利润: $${initialGaapProfit}M`;
+                                    }
+                                    return `调整项: $${currentProfit - initialGaapProfit}M`;
+                                },
+                                footer: function() {
+                                    return `Non-GAAP "调整后"净利润: $${currentProfit}M`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.querySelectorAll('.non-gaap-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const value = parseInt(this.dataset.value);
+                if (!addedAdjustments.has(this.dataset.label)) {
+                    currentProfit += value;
+                    addedAdjustments.add(this.dataset.label);
+                    this.disabled = true;
+                    this.classList.add('opacity-50', 'cursor-not-allowed');
+                    nonGaapChart.data.datasets[1].data = [currentProfit - initialGaapProfit];
+                    nonGaapChart.update();
+                }
+            });
+        });
+
+        document.getElementById('reset-btn').addEventListener('click', function() {
+            currentProfit = initialGaapProfit;
+            addedAdjustments.clear();
+            document.querySelectorAll('.non-gaap-btn').forEach(button => {
+                button.disabled = false;
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+            });
+            createNonGaapChart();
+        });
+
+        createNonGaapChart();
+
+        // --- Section 5: Intangible Chart ---
+        const intangibleCtx = document.getElementById('intangibleChart').getContext('2d');
+        const intangibleData = {
+            '1975': [83, 17],
+            '2020': [10, 90]
+        };
+        const intangibleChart = new Chart(intangibleCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['有形资产', '无形资产'],
+                datasets: [{
+                    data: intangibleData['1975'],
+                    backgroundColor: ['#81B29A', '#FBC6A4'],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: '1975年 S&P 500 公司价值来源'
+                    }
+                }
+            }
+        });
+
+        document.getElementById('year-1975').addEventListener('click', function() {
+            intangibleChart.data.datasets[0].data = intangibleData['1975'];
+            intangibleChart.options.plugins.title.text = '1975年 S&P 500 公司价值来源';
+            intangibleChart.update();
+        });
+        document.getElementById('year-2020').addEventListener('click', function() {
+            intangibleChart.data.datasets[0].data = intangibleData['2020'];
+            intangibleChart.options.plugins.title.text = '2020年 S&P 500 公司价值来源';
+            intangibleChart.update();
+        });
+    });
+</script>
+
+</body>
+</html>

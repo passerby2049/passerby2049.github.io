@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>读书笔记 - 个人学习空间</title>
+    <style>
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #475569;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.025em;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 300;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            margin-bottom: 2rem;
+        }
+        
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #667eea;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            color: #764ba2;
+        }
+        
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .note-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .note-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px 24px 0 0;
+        }
+        
+        .note-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .note-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+            text-align: center;
+            line-height: 1;
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
+            font-variant-emoji: emoji;
+        }
+        
+        .note-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            letter-spacing: -0.025em;
+        }
+        
+        .note-description {
+            color: #64748b;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .note-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        
+        .note-features li {
+            color: #475569;
+            margin-bottom: 0.6rem;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .note-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .note-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            width: 100%;
+            justify-content: center;
+            border: none;
+        }
+        
+        .note-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6b5b95 100%);
+        }
+        
+        .tag {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            color: #667eea;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(71, 85, 105, 0.8);
+            font-size: 0.95rem;
+            margin-top: 4rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header p {
+                font-size: 1.1rem;
+            }
+            
+            .notes-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .note-card {
+                padding: 1.5rem;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 读书笔记</h1>
+            <a href="../" class="nav-link">
+                ← 返回首页
+            </a>
+        </div>
+        
+        <div class="notes-grid">
+            <div class="note-card">
+                <div class="tag">投资学习</div>
+                <div class="note-icon">📊</div>
+                <h3 class="note-title">《聪明的投资者》读书笔记</h3>
+                <p class="note-description">
+                    本杰明·格雷厄姆经典投资理论的可视化呈现，帮助理解价值投资的核心原则和实践方法。
+                </p>
+                <ul class="note-features">
+                    <li>投资vs投机的本质区别分析</li>
+                    <li>安全边际原理的深度解析</li>
+                    <li>防御型投资者的完整策略指南</li>
+                    <li>积极型投资者的专业工具箱</li>
+                    <li>交互式图表展示历史投资数据</li>
+                </ul>
+                <a href="the-intelligent-investor.html" class="note-button">
+                    查看笔记 →
+                </a>
+            </div>
+            
+            <div class="note-card">
+                <div class="tag">投资策略</div>
+                <div class="note-icon">⚖️</div>
+                <h3 class="note-title">《杠杆轮动策略》读书笔记</h3>
+                <p class="note-description">
+                    深度解析杠杆轮动策略的原理与风险，通过数据可视化揭示高收益策略背后的真相。
+                </p>
+                <ul class="note-features">
+                    <li>杠杆投资的核心机制深度分析</li>
+                    <li>200日均线策略的详细解读</li>
+                    <li>历史回测数据的可视化展示</li>
+                    <li>全面的风险警示与实操指南</li>
+                    <li>理性客观的投资策略思考</li>
+                </ul>
+                <a href="lrs.html" class="note-button">
+                    查看笔记 →
+                </a>
+            </div>
+            
+            <div class="note-card">
+                <div class="tag">价值投资</div>
+                <div class="note-icon">💎</div>
+                <h3 class="note-title">《巴菲特致股东的信》读书笔记</h3>
+                <p class="note-description">
+                    深度解析巴菲特致股东信中的投资智慧，将其转化为可执行的投资框架和实践指南。
+                </p>
+                <ul class="note-features">
+                    <li>四大基础心态：能力圈与安全边际</li>
+                    <li>经济护城河的识别与深度评估</li>
+                    <li>股东盈余等核心估值工具详解</li>
+                    <li>集中投资vs多元化策略对比</li>
+                    <li>完整的可执行投资检查清单</li>
+                </ul>
+                <a href="berkshirehathaway-letters.html" class="note-button">
+                    查看笔记 →
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>持续更新中，更多投资经典著作解析敬请期待...</p>
+        </div>
+    </div>
+</body>
+</html>
