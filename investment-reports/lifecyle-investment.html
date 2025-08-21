@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重新思考退休投资：交互式报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: 本应用的架构设计旨在将复杂的学术研究转化为一个引人入胜的叙事体验。它没有直接复制报告的章节，而是采用了主题式仪表板的结构，引导用户逐步探索。1. **英雄标题区**：开门见山，用一个颠覆性的问题抓住用户注意力。2. **核心对比区**：并列展示"传统智慧"与"新范式"，直观建立核心冲突。3. **交互式仪表板**：这是应用的核心，用户可以通过点击按钮，动态比较不同策略在"退休财富"、"破产风险"和"遗产规划"三个关键维度上的表现，将数据探索的主动权交给用户。4. **机会成本可视化**：将"等效储蓄率"这个抽象概念具象化，让用户直观感受传统策略的隐性成本。5. **深度剖析**：通过可切换的选项卡，揭示为何国际股票在长期优于债券，解释新范式背后的逻辑。6. **最终启示**：总结研究对个人、顾问和监管机构的意义，提供明确的行动指南。这种结构将用户从"是什么"引导到"为什么"，再到"怎么办"，符合认知规律，旨在实现最佳的用户理解和信息留存。 -->
+    <!-- Visualization & Content Choices: 本应用严格遵守无SVG/Mermaid的原则，所有可视化均通过Chart.js的Canvas实现，确保了高性能和交互性。1. **退休结果对比** (目标: 比较): 选用动态条形图。用户通过点击按钮切换指标，图表和旁边的关键数据卡片会同步更新。这种设计能让用户在同一视图下清晰地比较三种策略的优劣，互动性强，反馈即时。2. **等效储蓄率** (目标: 告知/对比): 同样使用条形图，将抽象的百分比转化为视觉上高度差异的条块，极大地增强了数据的冲击力和可理解性。3. **债券 vs. 国际股票** (目标: 解释/组织): 采用选项卡式布局，每个选项卡内嵌一个简单的水平条形图。这种设计将三个独立的论点（长期风险、分散化、通胀对冲）清晰地组织起来，避免信息过载，用户可以按自己的节奏探索每个概念，增强了学习效果。所有图表都配置为响应式，确保在不同设备上都有良好的阅读体验。 -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #1a202c;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .back-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .back-home:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1), 0 1px 8px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 45vh;
+            max-height: 400px;
+        }
+        .small-chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+            max-height: 250px;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active {
+            background-color: #667eea;
+            color: #FFFFFF;
+            font-weight: 700;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .tab-button.active {
+            border-color: #667eea;
+            background-color: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            font-weight: 500;
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .section-subtitle {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    <a href="./" class="back-home">
+        ← 返回投资报告
+    </a>
+
+    <header class="text-center mb-12 md:mb-16">
+        <h1 class="section-title">重新思考您的退休投资</h1>
+        <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto mb-8">一份颠覆性的研究表明，传统投资智慧可能正在损害您的长期财富。本报告将带您探索一种更优的生命周期投资新范式。</p>
+        <div class="flex justify-center gap-4 mb-8">
+            <a href="../assets/深度分析生命周期投资报告.pdf" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-purple-700 transition-all shadow-lg">
+                📄 深度分析报告
+            </a>
+            <a href="../assets/A Critical Assessment of Lifecycle Investment Advice.pdf" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg">
+                📄 学术论文原文
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section id="intro" class="mb-16 md:mb-20">
+            <h2 class="section-subtitle">传统智慧 vs. 全新范式</h2>
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="card p-6 text-center">
+                    <h3 class="text-xl font-semibold mb-4 text-gray-700">传统智慧：目标日期基金 (TDF)</h3>
+                    <p class="text-gray-600 mb-4">随着年龄增长，逐步降低股票仓位，增加"安全"的债券配置。这被称为"滑行路径"。</p>
+                    <div class="w-full bg-gray-200 rounded-full h-6">
+                        <div class="bg-gradient-to-r from-teal-500 to-amber-500 h-6 rounded-full flex items-center justify-between px-4 text-white text-xs font-bold">
+                            <span>100% 股票</span>
+                            <span>50/50</span>
+                            <span>100% 债券</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">年轻时高风险 → 退休时低风险</p>
+                </div>
+                <div class="card p-6 text-center border-2 border-[#667eea]">
+                    <h3 class="text-xl font-semibold mb-4 text-[#667eea]">全新范式：全球股票组合</h3>
+                    <p class="text-gray-600 mb-4">在整个生命周期中，保持一个稳定的、由约1/3国内股票和2/3国际股票构成的全股票组合。</p>
+                    <div class="w-full bg-teal-500 rounded-full h-6 flex items-center justify-center text-white text-xs font-bold">
+                        <span>始终保持 100% 全球股票</span>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">长期一致的增长策略</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard" class="mb-16 md:mb-20">
+            <h2 class="section-subtitle">交互式仪表板：策略表现大比拼</h2>
+            <p class="text-center text-gray-600 mb-8">点击下方按钮，查看不同策略在关键退休指标上的表现差异。</p>
+            <div id="nav-buttons" class="flex justify-center space-x-2 sm:space-x-4 mb-8 flex-wrap">
+                <button data-metric="wealth" class="nav-button active px-4 py-2 rounded-lg bg-white border border-gray-300">退休时财富</button>
+                <button data-metric="ruin" class="nav-button px-4 py-2 rounded-lg bg-white border border-gray-300">财务破产风险</button>
+                <button data-metric="legacy" class="nav-button px-4 py-2 rounded-lg bg-white border border-gray-300">身后遗产</button>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6 items-start">
+                <div class="lg:col-span-2 card p-4 sm:p-6">
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="card p-5">
+                        <h3 class="font-semibold text-lg mb-2 text-[#667eea]">最优策略</h3>
+                        <p id="optimal-value" class="text-3xl font-bold"></p>
+                        <p id="optimal-desc" class="text-sm text-gray-500"></p>
+                    </div>
+                    <div class="card p-5">
+                        <h3 class="font-semibold text-lg mb-2 text-gray-600">目标日期基金 (TDF)</h3>
+                        <p id="tdf-value" class="text-3xl font-bold"></p>
+                        <p id="tdf-desc" class="text-sm text-gray-500"></p>
+                    </div>
+                    <div class="card p-5">
+                        <h3 class="font-semibold text-lg mb-2 text-gray-600">60/40 平衡策略</h3>
+                        <p id="balanced-value" class="text-3xl font-bold"></p>
+                        <p id="balanced-desc" class="text-sm text-gray-500"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cost" class="mb-16 md:mb-20 text-center">
+            <h2 class="section-subtitle">传统建议的隐性成本</h2>
+            <p class="text-gray-600 max-w-3xl mx-auto mb-8">为了达到与"最优策略"（假设储蓄10%）相同的退休生活满意度，您需要储蓄多少？</p>
+            <div class="card p-4 sm:p-6">
+                <div class="chart-container h-[40vh] max-h-[350px]">
+                    <canvas id="savingsChart"></canvas>
+                </div>
+            </div>
+            <p class="mt-6 text-lg font-medium">选择目标日期基金，意味着您的储蓄负担需要增加 <span class="text-[#667eea] font-bold">63%</span>。</p>
+        </section>
+
+        <section id="deep-dive" class="mb-16 md:mb-20">
+            <h2 class="section-subtitle">深度剖析：为何国际股票完胜债券？</h2>
+            <p class="text-center text-gray-600 mb-8">对于长期投资者，债券的"安全"可能是一种幻觉。研究从三个关键维度揭示了真相。</p>
+            <div class="card p-6">
+                <div class="border-b border-gray-200 mb-6">
+                    <nav id="tab-buttons" class="flex space-x-4 -mb-px">
+                        <button data-tab="risk" class="tab-button active py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">1. 长期风险</button>
+                        <button data-tab="diversification" class="tab-button py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">2. 分散化效果</button>
+                        <button data-tab="inflation" class="tab-button py-3 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">3. 通胀对冲</button>
+                    </nav>
+                </div>
+                <div id="tab-content">
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion">
+            <h2 class="section-subtitle">结论：退休投资的新蓝图</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-4">
+                    <div class="text-4xl mb-3">👤</div>
+                    <h3 class="font-semibold text-lg mb-2">对个人投资者</h3>
+                    <p class="text-gray-600 text-sm">拥抱全球股票，保持长期、稳定的高仓位。成功的关键是纪律，而非择时。在市场回调时坚守阵地，以换取更丰厚的回报。</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-4xl mb-3">🤝</div>
+                    <h3 class="font-semibold text-lg mb-2">对财务顾问</h3>
+                    <p class="text-gray-600 text-sm">角色应从"资产配置师"转变为"行为教练"。帮助客户理解长期逻辑，管理情绪，避免在恐慌中做出错误决策。</p>
+                </div>
+                <div class="text-center p-4">
+                    <div class="text-4xl mb-3">🏛️</div>
+                    <h3 class="font-semibold text-lg mb-2">对监管机构</h3>
+                    <p class="text-gray-600 text-sm">重新审视养老金的"默认投资选项"。应鼓励更能保障长期真实购买力的新产品，而非仅仅规避短期波动性。</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center mt-16 border-t pt-8">
+        <p class="text-sm text-gray-500">本交互式报告基于 A. Anarkulova, S. Cederburg, M. S. O'Doherty (2025) 的学术研究《超越现状：对生命周期投资建议的批判性评估》。数据和结论仅供参考，不构成投资建议。</p>
+    </footer>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const data = {
+            wealth: {
+                labels: ['最优策略', '目标日期基金', '60/40 平衡'],
+                values: [740000, 550000, 480000],
+                title: '退休时财富中位数 (美元)',
+                descriptions: {
+                    optimal: '利用全球股市的长期增长潜力，积累更多财富。',
+                    tdf: '因过早转入低收益债券而牺牲了部分增长。',
+                    balanced: '保守的配置限制了财富的上限。'
+                },
+                formatter: (value) => `$${(value / 1000).toFixed(0)}k`
+            },
+            ruin: {
+                labels: ['最优策略', '目标日期基金', '60/40 平衡'],
+                values: [6.7, 19.7, 16.9],
+                title: '财务破产概率 (%)',
+                descriptions: {
+                    optimal: '持续的真实回报增长是对抗长寿和通胀风险的最佳保障。',
+                    tdf: '债券无法有效抵御通胀，导致长期购买力下降，风险更高。',
+                    balanced: '同样受困于债券在长期内的低效表现。'
+                },
+                formatter: (value) => `${value.toFixed(1)}%`
+            },
+            legacy: {
+                labels: ['最优策略', '目标日期基金', '60/40 平衡'],
+                values: [960000, 270000, 350000],
+                title: '遗产财富中位数 (美元)',
+                descriptions: {
+                    optimal: '不仅能满足自身退休需求，还能为后代留下可观财富。',
+                    tdf: '资产在退休后增长乏力，消耗速度快于增值速度。',
+                    balanced: '遗产规模受限于组合的整体增长率。'
+                },
+                formatter: (value) => `$${(value / 1000).toFixed(0)}k`
+            }
+        };
+
+        const savingsData = {
+            labels: ['最优策略', '目标日期基金', '60/40 平衡'],
+            values: [10.0, 16.27, 19.44],
+            title: '为达同等效果所需的储蓄率 (%)'
+        };
+
+        const deepDiveData = {
+            risk: {
+                title: '30年期风险 (方差比率)',
+                explanation: '方差比率衡量长期风险与短期风险的关系。比率 > 1 意味着资产长期风险更高。数据显示，随着时间推移，债券变得越来越"危险"，而国际股票则相反。',
+                labels: ['政府债券', '国际股票'],
+                values: [2.30, 0.75],
+                backgroundColor: ['#D1C4E9', '#A5D6A7']
+            },
+            diversification: {
+                title: '与国内股票的30年期相关性',
+                explanation: '相关性越低，分散化效果越好。在长期，国际股票与国内股票的关联度低于债券，提供了更可靠的风险分散。',
+                labels: ['政府债券', '国际股票'],
+                values: [0.45, 0.34],
+                backgroundColor: ['#D1C4E9', '#A5D6A7']
+            },
+            inflation: {
+                title: '与通货膨胀的30年期相关性',
+                explanation: '负相关性意味着资产价值在高通胀时期会受损。债券与通胀呈强烈的负相关，是糟糕的购买力保值工具。国际股票则基本不受影响。',
+                labels: ['政府债券', '国际股票'],
+                values: [-0.78, -0.01],
+                backgroundColor: ['#D1C4E9', '#A5D6A7']
+            }
+        };
+
+        let mainChart, savingsChart, deepDiveChart;
+        const mainChartCtx = document.getElementById('mainChart').getContext('2d');
+        const savingsChartCtx = document.getElementById('savingsChart').getContext('2d');
+
+        const chartColors = ['#667eea', '#BDBDBD', '#E0E0E0'];
+
+        function createMainChart(metric) {
+            if (mainChart) {
+                mainChart.destroy();
+            }
+            mainChart = new Chart(mainChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: data[metric].labels,
+                    datasets: [{
+                        label: data[metric].title,
+                        data: data[metric].values,
+                        backgroundColor: chartColors,
+                        borderColor: chartColors.map(c => c + 'FF'),
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: data[metric].title,
+                            font: { size: 16, weight: '500' },
+                            padding: { top: 10, bottom: 20 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return data[metric].formatter(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return data[metric].formatter(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createSavingsChart() {
+            savingsChart = new Chart(savingsChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: savingsData.labels,
+                    datasets: [{
+                        label: savingsData.title,
+                        data: savingsData.values,
+                        backgroundColor: chartColors,
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: savingsData.title,
+                            font: { size: 16, weight: '500' },
+                            padding: { top: 10, bottom: 20 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.raw.toFixed(2)}%`
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => `${value}%`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createDeepDiveChart(tab) {
+            const tabContent = document.getElementById('tab-content');
+            tabContent.innerHTML = `
+                    <p class="text-gray-600 mb-4 max-w-2xl">${deepDiveData[tab].explanation}</p>
+                    <div class="small-chart-container">
+                        <canvas id="deepDiveCanvas"></canvas>
+                    </div>
+                `;
+            const deepDiveCtx = document.getElementById('deepDiveCanvas').getContext('2d');
+
+            if(deepDiveChart) deepDiveChart.destroy();
+
+            deepDiveChart = new Chart(deepDiveCtx, {
+                type: 'bar',
+                data: {
+                    labels: deepDiveData[tab].labels,
+                    datasets: [{
+                        label: deepDiveData[tab].title,
+                        data: deepDiveData[tab].values,
+                        backgroundColor: deepDiveData[tab].backgroundColor,
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: deepDiveData[tab].title,
+                            font: { size: 14, weight: '500' },
+                            padding: { top: 5, bottom: 15 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: deepDiveData[tab].values.every(v => v >= 0),
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateDashboard(metric) {
+            createMainChart(metric);
+            const formatter = data[metric].formatter;
+            document.getElementById('optimal-value').textContent = formatter(data[metric].values[0]);
+            document.getElementById('tdf-value').textContent = formatter(data[metric].values[1]);
+            document.getElementById('balanced-value').textContent = formatter(data[metric].values[2]);
+
+            document.getElementById('optimal-desc').textContent = data[metric].descriptions.optimal;
+            document.getElementById('tdf-desc').textContent = data[metric].descriptions.tdf;
+            document.getElementById('balanced-desc').textContent = data[metric].descriptions.balanced;
+        }
+
+        document.getElementById('nav-buttons').addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const metric = e.target.dataset.metric;
+                document.querySelectorAll('#nav-buttons .nav-button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                updateDashboard(metric);
+            }
+        });
+
+        document.getElementById('tab-buttons').addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const tab = e.target.dataset.tab;
+                document.querySelectorAll('#tab-buttons .tab-button').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                createDeepDiveChart(tab);
+            }
+        });
+
+        updateDashboard('wealth');
+        createSavingsChart();
+        createDeepDiveChart('risk');
+    });
+</script>
+</body>
+</html>
