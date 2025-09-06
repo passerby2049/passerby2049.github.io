@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>空洞骑士：丝之歌 存档编辑器</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e1e2e 0%, #2d3748 100%);
+            color: #e2e8f0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: #1a1a2e;
+            border-right: 1px solid #3a3a5c;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #a855f7;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-zone {
+            border: 2px dashed #4c51bf;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-zone:hover {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .upload-zone.dragover {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #4c51bf;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: #a855f7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            margin: 5px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #9333ea;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #4a5568;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #2d3748;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .control-group h3 {
+            margin-bottom: 15px;
+            color: #a855f7;
+            font-size: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #cbd5e0;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 8px 12px;
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 4px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+        }
+
+        .editor-container {
+            flex: 1;
+            position: relative;
+            background: #1e1e2e;
+        }
+
+        .status-bar {
+            background: #16213e;
+            padding: 10px 20px;
+            border-top: 1px solid #3a3a5c;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-success { background: #10b981; }
+        .status-error { background: #ef4444; }
+        .status-warning { background: #f59e0b; }
+        .status-info { background: #3b82f6; }
+
+        .upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .upload-placeholder-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #4c51bf;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1a1a2e;
+            border: 1px solid #3a3a5c;
+            border-radius: 8px;
+            padding: 16px;
+            max-width: 400px;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left: 4px solid #10b981; }
+        .toast.error { border-left: 4px solid #ef4444; }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .warning-banner {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #fbbf24;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .warning-banner strong {
+            color: #fbbf24;
+        }
+
+        .info-section {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .info-section h4 {
+            color: #3b82f6;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .path-list {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 4px;
+            margin: 8px 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 11px;
+            word-break: break-all;
+        }
+
+        .os-section {
+            margin-bottom: 12px;
+        }
+
+        .os-section strong {
+            color: #10b981;
+            display: inline-block;
+            min-width: 80px;
+        }
+
+        .backup-steps {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .backup-steps h4 {
+            color: #10b981;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .backup-steps ol {
+            padding-left: 20px;
+        }
+
+        .backup-steps li {
+            margin-bottom: 8px;
+        }
+
+        .accordion {
+            border: 1px solid #3a3a5c;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            background: #2d3748;
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .accordion-header:hover {
+            background: #374151;
+        }
+
+        .accordion-content {
+            padding: 15px;
+            border-top: 1px solid #3a3a5c;
+            display: none;
+        }
+
+        .accordion.active .accordion-content {
+            display: block;
+        }
+
+        .accordion-arrow {
+            transition: transform 0.2s;
+        }
+
+        .accordion.active .accordion-arrow {
+            transform: rotate(180deg);
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-unavailable {
+            background: #dc2626;
+            color: white;
+        }
+
+        .status-unknown {
+            background: #64748b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="header">
+                <h1>🕸️ 丝之歌存档编辑器</h1>
+                <p style="color: #64748b; font-size: 12px;">上传存档文件开始编辑</p>
+            </div>
+
+            <!-- 重要警告 -->
+            <div class="warning-banner">
+                <strong>⚠️ 重要提醒：</strong><br>
+                在使用此工具前，请务必备份您的原始存档文件！修改存档文件可能导致游戏无法正常运行或存档损坏。
+            </div>
+
+            <!-- 折叠式信息区域 -->
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>📁 存档文件位置</span>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="info-section">
+                        <h4>🖥️ 存档文件路径</h4>
+                        <div class="os-section">
+                            <strong>Windows:</strong>
+                            <div class="path-list">%USERPROFILE%\AppData\LocalLow\Team Cherry\Hollow Knight Silksong\</div>
+                        </div>
+                        <div class="os-section">
+                            <strong>macOS:</strong>
+                            <div class="path-list">~/Library/Application Support/unity.Team Cherry.Hollow Knight Silksong/</div>
+                        </div>
+                        <div class="os-section">
+                            <strong>Linux:</strong>
+                            <div class="path-list">~/.config/unity3d/Team Cherry/Hollow Knight Silksong/</div>
+                        </div>
+                        <div class="os-section">
+                            <strong>Steam Deck:</strong>
+                            <div class="path-list">~/.local/share/Steam/steamapps/compatdata/[APPID]/pfx/drive_c/users/steamuser/AppData/LocalLow/Team Cherry/Hollow Knight Silksong/</div>
+                        </div>
+                        <p style="color: #94a3b8; margin-top: 10px; font-size: 12px;">
+                            <strong>提示：</strong>存档文件通常名为 user1.dat、user2.dat 等。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>💾 备份步骤</span>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="backup-steps">
+                        <h4>🛡️ 如何备份存档</h4>
+                        <ol>
+                            <li>找到上述对应平台的存档文件夹</li>
+                            <li>复制整个存档文件夹到安全位置（如桌面或文档文件夹）</li>
+                            <li>重命名备份文件夹，添加日期后缀（如 "存档备份_2024-01-01"）</li>
+                            <li>确认备份文件夹包含所有 .dat 文件</li>
+                            <li>现在可以安全地使用此工具编辑存档</li>
+                        </ol>
+                        <p style="color: #94a3b8; margin-top: 10px; font-size: 12px;">
+                            <strong>恢复方法：</strong>如果出现问题，删除当前存档文件夹，将备份文件夹重命名回原来的名称即可。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>ℹ️ 使用说明</span>
+                    <span class="accordion-arrow">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="info-section">
+                        <h4>🎮 使用方法</h4>
+                        <ol style="padding-left: 20px; line-height: 1.6;">
+                            <li>备份原始存档文件</li>
+                            <li>上传存档文件（.dat 格式）</li>
+                            <li>在右侧编辑器中修改 JSON 数据</li>
+                            <li>或使用左侧快速编辑控件</li>
+                            <li>点击"下载存档"获取修改后的文件</li>
+                            <li>将修改后的文件替换到游戏存档文件夹</li>
+                        </ol>
+                        <p style="color: #f59e0b; margin-top: 10px; font-size: 12px;">
+                            <strong>注意：</strong>请确保 JSON 格式正确，否则可能导致存档无法加载。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 上传区域 -->
+            <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📁</div>
+                <div>
+                    <strong>点击或拖拽上传存档文件</strong>
+                    <br>
+                    <small style="color: #64748b;">支持 Silksong 存档格式</small>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".dat,.save">
+            </div>
+
+            <!-- 控制按钮 -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; margin-bottom: 20px;">
+                <button class="btn" id="downloadBtn" disabled>💾 下载存档</button>
+                <button class="btn btn-secondary" id="resetBtn" disabled>🔄 重置修改</button>
+                <button class="btn btn-danger" id="clearBtn" disabled>🗑️ 清除数据</button>
+            </div>
+
+            <!-- 快速编辑控件 -->
+            <div id="quickControls" class="hidden">
+                <div class="control-group">
+                    <h3>💰 快捷操作</h3>
+                    
+                    <!-- 念珠数量 -->
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <label>念珠数量</label>
+                            <span id="geoStatus" class="status-badge">—</span>
+                        </div>
+                        <input type="number" id="geoInput" min="0" max="999999" placeholder="输入数量">
+                        <p style="color: #94a3b8; font-size: 11px; margin-top: 5px;">
+                            当前念珠数量 (playerData.geo)
+                        </p>
+                    </div>
+
+                    <!-- 生命值 -->
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <label>生命值</label>
+                            <span id="healthStatus" class="status-badge">—</span>
+                        </div>
+                        <input type="number" id="healthInput" min="1" max="50" placeholder="输入生命值">
+                        <p style="color: #94a3b8; font-size: 11px; margin-top: 5px;">
+                            最大生命值 (maxHealth & maxHealthBase)
+                        </p>
+                    </div>
+
+                    <!-- 骨钉升级次数 -->
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <label>骨钉升级次数</label>
+                            <span id="nailStatus" class="status-badge">—</span>
+                        </div>
+                        <input type="number" id="nailInput" min="0" max="4" placeholder="输入升级次数">
+                        <p style="color: #94a3b8; font-size: 11px; margin-top: 5px;">
+                            骨钉升级次数 (playerData.nailUpgrades)
+                        </p>
+                    </div>
+
+                    <!-- 甲壳碎片 -->
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <label>甲壳碎片</label>
+                            <span id="shellStatus" class="status-badge">—</span>
+                        </div>
+                        <input type="number" id="shellInput" min="0" max="999" placeholder="输入数量">
+                        <p style="color: #94a3b8; font-size: 11px; margin-top: 5px;">
+                            甲壳碎片数量 (playerData.ShellShards)
+                        </p>
+                    </div>
+
+                    <!-- 灵丝自动回复速度 -->
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <label>灵丝自动回复速度</label>
+                            <span id="silkStatus" class="status-badge">—</span>
+                        </div>
+                        <input type="number" id="silkInput" min="0" max="100" placeholder="输入速度">
+                        <p style="color: #94a3b8; font-size: 11px; margin-top: 5px;">
+                            灵丝自动回复速度 (playerData.silkRegenMax)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="editor-container" id="editorContainer">
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                    <div class="upload-placeholder-icon">🕸️</div>
+                    <h2>空洞骑士：丝之歌存档编辑器</h2>
+                    <p>请在左侧上传存档文件开始编辑</p>
+                </div>
+                <div id="monacoEditor" style="height: 100%; display: none;"></div>
+            </div>
+            
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div class="status-dot status-info" id="statusDot"></div>
+                    <span id="statusText">就绪</span>
+                </div>
+                <div id="statusInfo">
+                    <span>JSON 格式正确</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知 -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // 全局变量
+        let editor = null;
+        let saveData = null;
+        let originalJsonContent = '';
+        let isValidJson = true;
+
+        // AES 密钥和头部信息
+        const AES_KEY = 'UKu52ePUBwetZ9wNX88o54dnfKRu0T1l';
+        const CSHARP_HEADER = new Uint8Array([0, 1, 0, 0, 0, 255, 255, 255, 255, 1, 0, 0, 0, 0, 0, 0, 0, 6, 1, 0, 0, 0]);
+
+        // 初始化 Monaco 编辑器
+        function initMonacoEditor() {
+            require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' }});
+            require(['vs/editor/editor.main'], function () {
+                editor = monaco.editor.create(document.getElementById('monacoEditor'), {
+                    value: '',
+                    language: 'json',
+                    theme: 'vs-dark',
+                    automaticLayout: true,
+                    formatOnPaste: true,
+                    formatOnType: true,
+                    scrollBeyondLastLine: false,
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    lineNumbers: 'on',
+                    folding: true,
+                    wordWrap: 'on'
+                });
+
+                // 监听内容变化
+                editor.onDidChangeModelContent(() => {
+                    const content = editor.getValue();
+                    validateJson(content);
+                    updateQuickControls();
+                });
+            });
+        }
+
+        // 显示通知
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 更新状态
+        function updateStatus(message, type = 'info') {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            statusDot.className = `status-dot status-${type}`;
+            statusText.textContent = message;
+        }
+
+        // 移除文件头部
+        function removeHeader(data) {
+            let offset = 22; // C# 头部长度
+            
+            // 解析长度前缀字符串头部 (LEB128 编码)
+            let length = 0;
+            let shift = 0;
+            let lengthBytes = 0;
+            
+            for (let i = 0; i < 5 && offset + i < data.length; i++) {
+                const byte = data[offset + i];
+                length |= (byte & 0x7F) << shift;
+                lengthBytes++;
+                if ((byte & 0x80) === 0) {
+                    break;
+                }
+                shift += 7;
+            }
+            
+            offset += lengthBytes;
+            
+            // 移除尾部字节 (11) - 返回时不包含最后一个字节
+            return data.slice(offset, -1);
+        }
+
+        // 添加文件头部
+        function addHeader(base64Data) {
+            const dataLength = base64Data.length;
+            
+            // 生成长度头部 (LEB128)
+            const lengthHeader = [];
+            let length = dataLength;
+            
+            while (length >= 0x80) {
+                lengthHeader.push((length & 0x7F) | 0x80);
+                length >>>= 7;
+            }
+            lengthHeader.push(length & 0x7F);
+            
+            // 合并所有部分
+            const result = new Uint8Array(CSHARP_HEADER.length + lengthHeader.length + base64Data.length + 1);
+            let offset = 0;
+            
+            // C# 头部
+            result.set(CSHARP_HEADER, offset);
+            offset += CSHARP_HEADER.length;
+            
+            // 长度头部
+            result.set(lengthHeader, offset);
+            offset += lengthHeader.length;
+            
+            // Base64 数据
+            result.set(base64Data, offset);
+            offset += base64Data.length;
+            
+            // 尾部字节
+            result[offset] = 11;
+            
+            return result;
+        }
+
+        // 解码存档文件
+        function decodeSilksongSave(fileData) {
+            try {
+                const data = new Uint8Array(fileData);
+                
+                // 1. 移除头部
+                const dataNoHeader = removeHeader(data);
+                
+                // 2. Base64 解码
+                const base64String = new TextDecoder().decode(dataNoHeader)
+                    .replace(/\n/g, '')
+                    .replace(/\r/g, '')
+                    .trim();
+                
+                const encryptedData = CryptoJS.enc.Base64.parse(base64String);
+                
+                // 3. AES 解密
+                const decrypted = CryptoJS.AES.decrypt(
+                    { ciphertext: encryptedData },
+                    CryptoJS.enc.Utf8.parse(AES_KEY),
+                    {
+                        mode: CryptoJS.mode.ECB,
+                        padding: CryptoJS.pad.Pkcs7
+                    }
+                );
+                
+                // 4. 解析 JSON
+                const jsonString = decrypted.toString(CryptoJS.enc.Utf8);
+                return JSON.parse(jsonString);
+                
+            } catch (error) {
+                console.error('解码存档文件错误:', error);
+                throw new Error('解码存档文件失败。请检查文件格式。');
+            }
+        }
+
+        // 编码存档文件
+        function encodeSilksongSave(saveData) {
+            try {
+                // 1. 转换为 JSON 字符串
+                const jsonString = JSON.stringify(saveData, null, 0);
+                
+                // 2. AES 加密
+                const encrypted = CryptoJS.AES.encrypt(
+                    jsonString,
+                    CryptoJS.enc.Utf8.parse(AES_KEY),
+                    {
+                        mode: CryptoJS.mode.ECB,
+                        padding: CryptoJS.pad.Pkcs7
+                    }
+                );
+                
+                // 3. Base64 编码
+                const base64String = encrypted.toString();
+                const base64Data = new TextEncoder().encode(base64String);
+                
+                // 4. 添加头部
+                return addHeader(base64Data);
+                
+            } catch (error) {
+                console.error('编码存档文件错误:', error);
+                throw new Error('编码存档文件失败。请检查您的修改。');
+            }
+        }
+
+        // 验证 JSON
+        function validateJson(jsonString) {
+            try {
+                JSON.parse(jsonString);
+                isValidJson = true;
+                document.getElementById('statusInfo').textContent = 'JSON 格式正确';
+                return true;
+            } catch (error) {
+                isValidJson = false;
+                document.getElementById('statusInfo').textContent = 'JSON 格式错误: ' + error.message;
+                return false;
+            }
+        }
+
+        // 更新快速控件
+        function updateQuickControls() {
+            if (!editor || !isValidJson) return;
+            
+            try {
+                const content = editor.getValue();
+                const data = JSON.parse(content);
+                
+                // 更新念珠字段
+                updateFieldControl(data, 'geo', 'geoInput', 'geoStatus', 
+                    ['playerData.geo'], 'number');
+                
+                // 更新生命值字段 (同时处理maxHealth和maxHealthBase)
+                updateHealthFields(data);
+                
+                // 更新骨钉升级次数字段
+                updateFieldControl(data, 'nail', 'nailInput', 'nailStatus', 
+                    ['playerData.nailUpgrades'], 'number');
+                
+                // 更新甲壳碎片字段
+                updateFieldControl(data, 'shell', 'shellInput', 'shellStatus', 
+                    ['playerData.ShellShards'], 'number');
+                
+                // 更新灵丝自动回复速度字段
+                updateFieldControl(data, 'silk', 'silkInput', 'silkStatus', 
+                    ['playerData.silkRegenMax'], 'number');
+                
+            } catch (error) {
+                console.error('更新快速控件错误:', error);
+                // 重置所有状态为未知
+                ['geoStatus', 'healthStatus', 'nailStatus', 'shellStatus', 'silkStatus'].forEach(statusId => {
+                    const status = document.getElementById(statusId);
+                    status.textContent = '—';
+                    status.className = 'status-badge status-unknown';
+                });
+            }
+        }
+
+        // 通用字段控件更新函数
+        function updateFieldControl(data, fieldType, inputId, statusId, fieldPaths, valueType) {
+            const input = document.getElementById(inputId);
+            const status = document.getElementById(statusId);
+            
+            let foundField = false;
+            let fieldValue = null;
+            let actualFieldPath = '';
+            
+            // 尝试所有可能的字段路径
+            for (const path of fieldPaths) {
+                const value = getNestedValue(data, path);
+                if (value !== undefined) {
+                    foundField = true;
+                    fieldValue = value;
+                    actualFieldPath = path;
+                    break;
+                }
+            }
+            
+            if (foundField) {
+                input.value = fieldValue.toString();
+                input.disabled = false;
+                status.textContent = '✓';
+                status.className = 'status-badge status-available';
+                status.title = `字段路径: ${actualFieldPath}`;
+                
+                // 根据字段类型设置占位符
+                if (fieldType === 'nail') {
+                    input.placeholder = '输入升级次数 (0-4)';
+                } else {
+                    input.placeholder = '输入数量';
+                }
+            } else {
+                input.value = '';
+                input.disabled = true;
+                status.textContent = '✗';
+                status.className = 'status-badge status-unavailable';
+                status.title = '字段不可用';
+                input.placeholder = '字段不可用';
+            }
+            
+            // 存储字段路径到input元素，用于更新时使用
+            input.dataset.fieldPath = actualFieldPath;
+            input.dataset.valueType = valueType;
+        }
+
+        // 获取嵌套对象的值
+        function getNestedValue(obj, path) {
+            return path.split('.').reduce((current, key) => {
+                return current && current[key] !== undefined ? current[key] : undefined;
+            }, obj);
+        }
+
+        // 专门处理生命值字段的函数
+        function updateHealthFields(data) {
+            const healthInput = document.getElementById('healthInput');
+            const healthStatus = document.getElementById('healthStatus');
+            
+            const maxHealth = getNestedValue(data, 'playerData.maxHealth');
+            const maxHealthBase = getNestedValue(data, 'playerData.maxHealthBase');
+            
+            const hasMaxHealth = maxHealth !== undefined;
+            const hasMaxHealthBase = maxHealthBase !== undefined;
+            
+            if (hasMaxHealth || hasMaxHealthBase) {
+                // 优先显示maxHealth，如果没有则显示maxHealthBase
+                const displayValue = hasMaxHealth ? maxHealth : maxHealthBase;
+                healthInput.value = displayValue.toString();
+                healthInput.disabled = false;
+                healthStatus.textContent = '✓';
+                healthStatus.className = 'status-badge status-available';
+                
+                // 设置工具提示，显示找到了哪些字段
+                let tooltip = '找到字段: ';
+                if (hasMaxHealth && hasMaxHealthBase) {
+                    tooltip += 'maxHealth & maxHealthBase';
+                } else if (hasMaxHealth) {
+                    tooltip += 'maxHealth';
+                } else {
+                    tooltip += 'maxHealthBase';
+                }
+                healthStatus.title = tooltip;
+                healthInput.placeholder = '输入生命值';
+                
+                // 存储字段信息到input元素
+                healthInput.dataset.hasMaxHealth = hasMaxHealth;
+                healthInput.dataset.hasMaxHealthBase = hasMaxHealthBase;
+                healthInput.dataset.valueType = 'number';
+            } else {
+                healthInput.value = '';
+                healthInput.disabled = true;
+                healthStatus.textContent = '✗';
+                healthStatus.className = 'status-badge status-unavailable';
+                healthStatus.title = '字段不可用';
+                healthInput.placeholder = '字段不可用';
+            }
+        }
+
+        // 处理文件上传
+        function handleFileUpload(file) {
+            updateStatus('正在加载...', 'info');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const decoded = decodeSilksongSave(e.target.result);
+                    const jsonString = JSON.stringify(decoded, null, 2);
+                    
+                    saveData = decoded;
+                    originalJsonContent = jsonString;
+                    
+                    // 显示编辑器并隐藏上传提示
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
+                    document.getElementById('monacoEditor').style.display = 'block';
+                    document.getElementById('quickControls').classList.remove('hidden');
+                    
+                    // 设置编辑器内容
+                    if (editor) {
+                        editor.setValue(jsonString);
+                    }
+                    
+                    // 启用按钮
+                    document.getElementById('downloadBtn').disabled = false;
+                    document.getElementById('resetBtn').disabled = false;
+                    document.getElementById('clearBtn').disabled = false;
+                    
+                    updateStatus('文件加载成功', 'success');
+                    showToast('存档文件上传成功！', 'success');
+                    
+                } catch (error) {
+                    console.error('上传错误:', error);
+                    updateStatus('文件加载失败', 'error');
+                    showToast('上传失败: ' + error.message, 'error');
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        // 下载文件
+        function downloadFile() {
+            if (!editor || !isValidJson) {
+                showToast('请确保 JSON 格式正确', 'error');
+                return;
+            }
+
+            try {
+                const jsonContent = editor.getValue();
+                const parsedData = JSON.parse(jsonContent);
+                const encodedData = encodeSilksongSave(parsedData);
+                
+                const blob = new Blob([encodedData], { type: 'application/octet-stream' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'silksong_save_modified.dat';
+                document.body.appendChild(link);
+                link.click();
+                
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showToast('存档文件下载成功！', 'success');
+                
+            } catch (error) {
+                console.error('下载错误:', error);
+                showToast('下载失败: ' + error.message, 'error');
+            }
+        }
+
+        // 重置修改
+        function resetChanges() {
+            if (originalJsonContent && editor) {
+                editor.setValue(originalJsonContent);
+                showToast('已重置为原始内容', 'success');
+            }
+        }
+
+        // 清除所有数据
+        function clearAll() {
+            if (confirm('确定要清除所有数据吗？此操作不可恢复。')) {
+                saveData = null;
+                originalJsonContent = '';
+                
+                if (editor) {
+                    editor.setValue('');
+                }
+                
+                document.getElementById('uploadPlaceholder').style.display = 'flex';
+                document.getElementById('monacoEditor').style.display = 'none';
+                document.getElementById('quickControls').classList.add('hidden');
+                
+                // 禁用按钮
+                document.getElementById('downloadBtn').disabled = true;
+                document.getElementById('resetBtn').disabled = true;
+                document.getElementById('clearBtn').disabled = true;
+                
+                updateStatus('就绪', 'info');
+                showToast('数据已清除', 'success');
+            }
+        }
+
+        // 快速编辑功能
+        function updateField(path, value) {
+            if (!editor || !isValidJson) return;
+            
+            try {
+                const jsonContent = editor.getValue();
+                const data = JSON.parse(jsonContent);
+                
+                // 根据路径更新值
+                const pathParts = path.split('.');
+                let target = data;
+                
+                for (let i = 0; i < pathParts.length - 1; i++) {
+                    if (target[pathParts[i]] === undefined) {
+                        target[pathParts[i]] = {};
+                    }
+                    target = target[pathParts[i]];
+                }
+                
+                target[pathParts[pathParts.length - 1]] = value;
+                
+                const updatedJson = JSON.stringify(data, null, 2);
+                editor.setValue(updatedJson);
+                
+            } catch (error) {
+                console.error('更新字段错误:', error);
+            }
+        }
+
+        // 折叠菜单功能
+        function toggleAccordion(header) {
+            const accordion = header.parentElement;
+            const isActive = accordion.classList.contains('active');
+            
+            // 关闭所有其他折叠菜单
+            document.querySelectorAll('.accordion.active').forEach(acc => {
+                if (acc !== accordion) {
+                    acc.classList.remove('active');
+                }
+            });
+            
+            // 切换当前菜单状态
+            if (isActive) {
+                accordion.classList.remove('active');
+            } else {
+                accordion.classList.add('active');
+            }
+        }
+
+        // 事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化编辑器
+            initMonacoEditor();
+            
+            // 文件输入
+            const fileInput = document.getElementById('fileInput');
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    handleFileUpload(file);
+                }
+            });
+            
+            // 拖放处理
+            const uploadZone = document.querySelector('.upload-zone');
+            uploadZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+            
+            uploadZone.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+            });
+            
+            uploadZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileUpload(files[0]);
+                }
+            });
+            
+            // 按钮事件
+            document.getElementById('downloadBtn').addEventListener('click', downloadFile);
+            document.getElementById('resetBtn').addEventListener('click', resetChanges);
+            document.getElementById('clearBtn').addEventListener('click', clearAll);
+            
+            // 通用输入框事件处理函数
+            function setupFieldEventListener(inputId) {
+                document.getElementById(inputId).addEventListener('input', function(e) {
+                    const value = e.target.value;
+                    
+                    // 如果字段不可用，不处理输入
+                    if (e.target.disabled) return;
+                    
+                    // 验证输入格式
+                    let isValidInput = false;
+                    let processedValue = null;
+                    
+                    if (value === '') {
+                        isValidInput = true;
+                    } else {
+                        // 所有字段都只允许非负整数
+                        if (/^\d+$/.test(value)) {
+                            const numValue = parseInt(value, 10);
+                            
+                            // 根据字段类型设置范围限制
+                            if (inputId === 'nailInput' && numValue <= 4) {
+                                isValidInput = true;
+                                processedValue = numValue;
+                            } else if (inputId !== 'nailInput' && numValue >= 0) {
+                                isValidInput = true;
+                                processedValue = numValue;
+                            }
+                        }
+                    }
+                    
+                    if (isValidInput && value !== '') {
+                        // 特殊处理生命值字段
+                        if (inputId === 'healthInput') {
+                            updateHealthValues(processedValue);
+                        } else {
+                            // 其他字段使用原有逻辑
+                            const fieldPath = e.target.dataset.fieldPath;
+                            if (fieldPath) {
+                                updateField(fieldPath, processedValue);
+                            }
+                        }
+                    } else if (!isValidInput) {
+                        // 如果输入无效，恢复到之前的值
+                        e.target.value = e.target.value.slice(0, -1);
+                    }
+                });
+            }
+            
+            // 专门更新生命值的函数
+            function updateHealthValues(value) {
+                const healthInput = document.getElementById('healthInput');
+                const hasMaxHealth = healthInput.dataset.hasMaxHealth === 'true';
+                const hasMaxHealthBase = healthInput.dataset.hasMaxHealthBase === 'true';
+                
+                // 同时更新两个字段
+                if (hasMaxHealth) {
+                    updateField('playerData.maxHealth', value);
+                }
+                if (hasMaxHealthBase) {
+                    updateField('playerData.maxHealthBase', value);
+                }
+            }
+            
+            // 为所有输入框设置事件监听器
+            ['geoInput', 'healthInput', 'nailInput', 'shellInput', 'silkInput'].forEach(setupFieldEventListener);
+        });
+    </script>
+</body>
+</html>
