@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>空洞骑士：丝之歌 存档编辑器</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-J3VQJ8RSJM"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-J3VQJ8RSJM');
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.js"></script>
     <style>
@@ -528,7 +536,7 @@
                             <label>骨钉升级次数</label>
                             <span id="nailStatus" class="status-badge">—</span>
                         </div>
-                        <input type="number" id="nailInput" min="0" max="4" placeholder="输入升级次数">
+                        <input type="number" id="nailInput" min="0" max="1000" placeholder="输入升级次数">
                         <p style="color: #94a3b8; font-size: 11px; margin-top: 5px;">
                             骨钉升级次数 (playerData.nailUpgrades)
                         </p>
@@ -854,7 +862,7 @@
                 
                 // 根据字段类型设置占位符
                 if (fieldType === 'nail') {
-                    input.placeholder = '输入升级次数 (0-4)';
+                    input.placeholder = '输入升级次数 (0-1000)';
                 } else {
                     input.placeholder = '输入数量';
                 }
@@ -1139,7 +1147,7 @@
                             const numValue = parseInt(value, 10);
                             
                             // 根据字段类型设置范围限制
-                            if (inputId === 'nailInput' && numValue <= 4) {
+                            if (inputId === 'nailInput' && numValue <= 1000) {
                                 isValidInput = true;
                                 processedValue = numValue;
                             } else if (inputId !== 'nailInput' && numValue >= 0) {
