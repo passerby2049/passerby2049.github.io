@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ListenWise — Learn languages from what you actually listen to</title>
+<meta name="description" content="Native macOS and iOS app. Transcribe podcasts, YouTube, and live streams. Learn vocabulary in context with AI. Your data stays local.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Background gradient layer -->
+<div class="bg-grad" aria-hidden="true">
+  <div class="halo halo-a"></div>
+  <div class="halo halo-b"></div>
+  <div class="halo halo-c"></div>
+</div>
+
+<!-- Nav -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="/">
+      <span class="brand-mark"></span>
+      <span class="brand-name">ListenWise</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="#download">Download</a>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <h1 class="h1">
+      Learn languages from what you actually listen to.
+    </h1>
+    <p class="lede">
+      Native macOS &amp; iOS. Transcribe podcasts, YouTube, and live streams.
+      Learn vocabulary in context. Your data stays local.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary btn-lg" href="#download">
+        Download for macOS
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2v10m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="btn btn-ghost btn-lg" href="#how">See how it works</a>
+    </div>
+    <div class="req">Requires macOS 26 Tahoe · iOS 26</div>
+  </div>
+
+  <!-- Hero screenshot frame -->
+  <div class="hero-shot">
+    <div class="shot-frame">
+      <img src="screenshots/01-hero-video-vocab.png" alt="ListenWise showing a Breaking Bad clip with bilingual subtitles and an AI vocabulary definition for &quot;distribution&quot;">
+    </div>
+  </div>
+</section>
+
+<!-- Social proof strip -->
+<section class="strip">
+  <div class="container strip-inner">
+    <span>Transcribes</span>
+    <span class="pill">Podcasts</span>
+    <span class="pill">YouTube</span>
+    <span class="pill">Live streams</span>
+    <span class="pill">Local audio &amp; video</span>
+    <span>in</span>
+    <span class="pill">English</span>
+    <span class="pill">中文</span>
+    <span class="pill">日本語</span>
+    <span class="pill">Français</span>
+    <span class="pill">Deutsch</span>
+    <span class="pill">Español</span>
+    <span class="pill">한국어</span>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="features">
+  <div class="container">
+    <div class="section-eyebrow">Features</div>
+    <h2 class="h2">Built for serious listeners.</h2>
+    <p class="h2-sub">Not another flashcard app. A desktop-grade tool for
+      studying the real material you actually want to understand.</p>
+  </div>
+
+  <!-- Row 1: Transcript + vocab inspector -->
+  <div class="feature-row container">
+    <div class="feature-copy">
+      <div class="feature-num">01</div>
+      <h3>Every word is a tap away.</h3>
+      <p>
+        Click a word, drag a phrase, or select a whole sentence. The AI
+        decides what kind of help you need — definition, collocations,
+        example sentences, or grammar analysis — and delivers it in
+        your target language, always with the source context attached.
+      </p>
+      <ul class="bullets">
+        <li>On-device speech-to-text via Apple Speech &amp; FluidAudio</li>
+        <li>Bring your own model: OpenRouter, Anthropic, OpenAI, Ollama, Apple Foundation</li>
+        <li>Vocabulary saves to a spaced-repetition Review queue</li>
+      </ul>
+    </div>
+    <div class="feature-shot">
+      <div class="shot-frame">
+        <img src="screenshots/03-transcript-vocab.png" alt="Transcript with vocabulary inspector showing AI-generated definitions">
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Review -->
+  <div class="feature-row feature-row-reverse container">
+    <div class="feature-copy">
+      <div class="feature-num">02</div>
+      <h3>Review what you saved.</h3>
+      <p>
+        Every word you tapped shows up in a spaced-repetition queue. The
+        SM-2 scheduler decides when to bring each card back — so the words
+        you half-remembered in that Breaking Bad clip actually stick.
+      </p>
+      <ul class="bullets">
+        <li>SM-2 scheduling with Again / Hard / Good / Easy ratings</li>
+        <li>Cards replay the original audio snippet in context</li>
+        <li>Library split by New, Learning, Young, Mature, Leech</li>
+      </ul>
+    </div>
+    <div class="feature-shot">
+      <div class="shot-frame">
+        <img src="screenshots/07-review.png" alt="Review page showing a spaced-repetition word card with definition, in-context sentence, and SM-2 schedule">
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3: Chat with the transcript -->
+  <div class="feature-row container">
+    <div class="feature-copy">
+      <div class="feature-num">03</div>
+      <h3>Chat with what you're listening to.</h3>
+      <p>
+        Stuck on a joke, a cultural reference, or a sentence with a
+        subjunctive you've never seen? Ask. The AI answers with the full
+        transcript as context — no copy-pasting into another app.
+      </p>
+      <ul class="bullets">
+        <li>Target-language responses by default</li>
+        <li>Streaming replies, just like ChatGPT</li>
+        <li>Chat history saved with the story</li>
+      </ul>
+    </div>
+    <div class="feature-shot">
+      <div class="shot-frame">
+        <img src="screenshots/04-chat.png" alt="Chat panel asking questions about the transcript">
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Live transcription -->
+  <div class="feature-row feature-row-reverse container">
+    <div class="feature-copy">
+      <div class="feature-num">04</div>
+      <h3>Real-time, live.</h3>
+      <p>
+        Plug in a live HLS stream — a Spanish news channel, a Japanese
+        weather broadcast, a German radio talk — and watch bilingual
+        subtitles appear as they're spoken. Every phrase you catch is a
+        tap away from a definition.
+      </p>
+      <ul class="bullets">
+        <li>Audio capture via ScreenCaptureKit, 48kHz</li>
+        <li>Two-line streaming translation (source + target)</li>
+        <li>Save the session; the transcript lives on after you stop</li>
+      </ul>
+    </div>
+    <div class="feature-shot">
+      <div class="shot-frame">
+        <img src="screenshots/05-live.png" alt="Live transcription view showing a Spanish news channel with bilingual subtitles">
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 5: Subscriptions -->
+  <div class="feature-row container">
+    <div class="feature-copy">
+      <div class="feature-num">05</div>
+      <h3>Your subscriptions, in one place.</h3>
+      <p>
+        Paste a podcast RSS, a YouTube channel URL, or an M3U playlist —
+        ListenWise pulls the latest episodes and keeps track of which
+        you've imported. The library is a learning queue, not a
+        content-discovery black hole.
+      </p>
+      <ul class="bullets">
+        <li>Podcast RSS with episode deduplication</li>
+        <li>YouTube channels via the official RSS feed</li>
+        <li>Live-channel bundles via M3U playlists</li>
+      </ul>
+    </div>
+    <div class="feature-shot">
+      <div class="shot-carousel">
+        <div class="shot-scroller" id="subs-scroller" tabindex="0" aria-label="Podcast, YouTube, and live-channel subscription views — scroll horizontally">
+          <figure class="shot-slide" id="slide-1">
+            <div class="shot-frame">
+              <img src="screenshots/02-podcast-detail.png" alt="Podcast subscription detail view">
+            </div>
+            <figcaption>Podcast RSS</figcaption>
+          </figure>
+          <figure class="shot-slide" id="slide-2">
+            <div class="shot-frame">
+              <img src="screenshots/06-youtube-channel.png" alt="YouTube channel subscription with imported videos">
+            </div>
+            <figcaption>YouTube channel</figcaption>
+          </figure>
+          <figure class="shot-slide" id="slide-3">
+            <div class="shot-frame">
+              <img src="screenshots/05-live.png" alt="Live-channel bundle from an M3U playlist">
+            </div>
+            <figcaption>Live M3U bundle</figcaption>
+          </figure>
+        </div>
+        <div class="shot-dots" aria-hidden="true">
+          <a href="#slide-1" class="shot-dot"></a>
+          <a href="#slide-2" class="shot-dot"></a>
+          <a href="#slide-3" class="shot-dot"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section id="how" class="how">
+  <div class="container">
+    <div class="section-eyebrow">How it works</div>
+    <h2 class="h2">Three steps. Native everywhere.</h2>
+
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-num">1</div>
+        <h4>Subscribe or import</h4>
+        <p>Paste a podcast, a YouTube channel, a live stream URL, or
+          drag an audio file.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">2</div>
+        <h4>Transcribe on-device</h4>
+        <p>Apple Speech and FluidAudio do the heavy lifting locally.
+          Nothing leaves your Mac unless you ask for translation.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-num">3</div>
+        <h4>Learn, don't just listen</h4>
+        <p>Click words. Ask the AI. Save vocabulary for review.
+          Export to Markdown when you want to take notes elsewhere.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="download" class="cta">
+  <div class="container cta-inner">
+    <h2 class="h2">Ready?</h2>
+    <p class="h2-sub">macOS 26 Tahoe · iOS 26. Free while in development.</p>
+    <div class="cta-row cta-row-centered">
+      <a class="btn btn-primary btn-lg" href="https://github.com/passerby2049/passerby2049.github.io/releases/latest/download/ListenWise.dmg">
+        Download for macOS
+      </a>
+      <p class="cta-note">~7 MB · Signed &amp; notarized · Requires macOS 26 Tahoe</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="faq">
+  <div class="container">
+    <div class="section-eyebrow">FAQ</div>
+    <h2 class="h2">Short answers.</h2>
+    <div class="faq-grid">
+      <details>
+        <summary>Do I need an OpenAI API key?</summary>
+        <p>No. Transcription runs on-device via Apple Speech. AI features
+          (translation, vocabulary, chat) need any compatible provider:
+          OpenRouter, Anthropic, OpenAI, Ollama (local), or Apple
+          Foundation. You pick.</p>
+      </details>
+      <details>
+        <summary>Does my data leave the device?</summary>
+        <p>Audio stays local. Transcripts stay local. Only text sent to
+          the AI provider you've configured leaves — and only when you
+          trigger it. Nothing is mined in the background.</p>
+      </details>
+      <details>
+        <summary>What languages does it transcribe?</summary>
+        <p>Any language Apple's on-device Speech framework supports —
+          English, Chinese, Japanese, French, German, Spanish, Korean,
+          and more. Translation target is per-story.</p>
+      </details>
+      <details>
+        <summary>Who's behind this?</summary>
+        <p>A single-developer indie project. Built by someone who wanted
+          to learn languages from the podcasts and YouTube channels they
+          already listen to, and couldn't find a tool that did it well.</p>
+      </details>
+      <details>
+        <summary>Does it work on iPhone?</summary>
+        <p>Yes. The iOS build shares the same codebase — transcribe,
+          learn, and sync across your Mac and iPhone via iCloud.</p>
+      </details>
+      <details>
+        <summary>What about live streams behind a paywall?</summary>
+        <p>ListenWise uses public HLS (m3u8) URLs. If a stream is public,
+          you can tune in. It doesn't bypass authentication.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <span class="brand-mark"></span>
+      <span class="brand-name">ListenWise</span>
+    </div>
+    <div class="footer-links">
+      <a href="#features">Features</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="footer-meta">
+      © 2026 ListenWise. A single-developer indie project.
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
